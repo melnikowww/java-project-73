@@ -16,8 +16,8 @@ ENV PATH=$PATH:$GRADLE_HOME/bin
 
 WORKDIR ./app
 
-COPY ./app .
+COPY ./ .
 
-RUN gradle stage
+RUN gradle installDist
 
-CMD ./build/install/java-project-73/bin/java-project-73
+CMD ./build/install/app/bin/app
