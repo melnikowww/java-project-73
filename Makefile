@@ -30,6 +30,9 @@ update-deps:
 files:
 	make -C app files
 
+stage:
+	make -C app stage
+
 build-run: build run
 
 .PHONY: build
