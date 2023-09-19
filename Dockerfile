@@ -14,10 +14,10 @@ RUN mv gradle-${GRADLE_VERSION} ${GRADLE_HOME}
 
 ENV PATH=$PATH:$GRADLE_HOME/bin
 
-WORKDIR /app
+WORKDIR ./app
 
-COPY /app .
+COPY ./app .
 
 RUN gradle stage
 
-CMD ./build/install/app/bin/app
+CMD ./build/install/java-project-73/bin/java-project-73
