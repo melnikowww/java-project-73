@@ -4,6 +4,7 @@ plugins {
 	id 'io.spring.dependency-management' version '1.1.3'
 	id 'application'
 	id 'jacoco'
+	id 'checkstyle'
 }
 
 group = 'hexlet.code'
@@ -67,3 +68,10 @@ test {
 jacocoTestReport {
 	dependsOn test
 }
+
+checkstyle {
+	toolVersion '10.12.1'
+}
+
+checkstyleMain.source = "src/main/java"
+checkstyleTest.source =  "src/test/java"
