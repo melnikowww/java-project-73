@@ -5,13 +5,13 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 public class WelcomeController {
-
     @GetMapping("/welcome")
     public String root() {
         return "Welcome to Spring!";
     }
 
-    @GetMapping("")
-    public void emptyRoot() {
+    @GetMapping("/")
+    public String emptyRoot() {
+        return "";
     }
 }
