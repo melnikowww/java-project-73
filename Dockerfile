@@ -16,8 +16,8 @@ ENV PATH=$PATH:$GRADLE_HOME/bin
 
 WORKDIR /app
 
-COPY ./ .
+COPY . ./app
 
 RUN gradle installDist
 
-CMD build/install/app/bin/app
+CMD ./build/install/app/bin/app
