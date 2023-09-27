@@ -85,3 +85,7 @@ checkstyleTest.source =  "src/test/java"
 application {
 	mainClass = 'hexlet.code.AppApplication'
 }
+
+wrapper{
+	gradleVersion = '8.3'
+}
