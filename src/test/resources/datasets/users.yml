@@ -1,0 +1,13 @@
+users:
+  - id: 1
+    email: ivan@google.com
+    firstName: Ivan
+    lastName: Petrov
+    password: 12345
+    createdAt: '2021-12-20T12:45:17.173Z'
+  - id: 2
+    email: petr@yahoo.com
+    firstName: Petr
+    lastName: Sidorov
+    password: 245565
+    createdAt: '2021-12-20T12:45:17.173Z'
