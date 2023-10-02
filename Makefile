@@ -35,7 +35,7 @@ update-deps:
 	./gradlew useLatestVersions
 
 stage:
-	./gradlew stage
+	./gradlew stage --args='--spring.profiles.active=production'
 
 .PHONY: build
 
