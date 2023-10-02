@@ -8,7 +8,7 @@ install:
 	./gradlew clean install
 
 start:
-	./gradlew bootRun --args='--spring.profiles.active=development'
+	SPRING_PROFILES_ACTIVE=development ./gradlew bootRun
 
 start-prod:
 	./gradlew bootRun --args='--spring.profiles.active=production'
@@ -35,7 +35,7 @@ update-deps:
 	./gradlew useLatestVersions
 
 stage:
-	./gradlew stage --args='--spring.profiles.active=production'
+	./gradlew stage
 
 .PHONY: build
 

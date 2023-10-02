@@ -13,8 +13,7 @@ public class AppApplication {
 
     public static void main(String[] args) {
         SpringApplication application = new SpringApplication(AppApplication.class);
-//        String profile = isProd() ? "production" : "development";
-//        application.setAdditionalProfiles(profile);
+        application.setAdditionalProfiles(System.getenv("SPRING_PROFILES_ACTIVE"));
         application.run(args);
     }
 }
