@@ -1,7 +1,7 @@
 package hexlet.code.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.github.database.rider.core.api.dataset.DataSet;
+//import com.github.database.rider.core.api.dataset.DataSet;
 import hexlet.code.controllers.UserController;
 import hexlet.code.dto.UserDto;
 import hexlet.code.model.User;
@@ -27,7 +27,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 @AutoConfigureMockMvc
 //@Transactional
 //@DBRider
-@DataSet("users.yml")
+//@DataSet("users.yml")
 public class UserControllerTest {
 
     @Autowired

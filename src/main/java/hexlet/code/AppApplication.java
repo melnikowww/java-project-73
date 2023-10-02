@@ -13,16 +13,8 @@ public class AppApplication {
 
     public static void main(String[] args) {
         SpringApplication application = new SpringApplication(AppApplication.class);
-        String profile = isProd() ? "production" : "development";
-        application.setAdditionalProfiles(profile);
+//        String profile = isProd() ? "production" : "development";
+//        application.setAdditionalProfiles(profile);
         application.run(args);
-    }
-
-    public static String getMode() {
-        return System.getenv().getOrDefault("APP_ENV", "development");
-    }
-
-    public static boolean isProd() {
-        return getMode().equals("production");
     }
 }
