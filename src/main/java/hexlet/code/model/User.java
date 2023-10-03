@@ -21,12 +21,12 @@ import jakarta.persistence.TemporalType;
 
 import java.sql.Timestamp;
 
-@Entity
-@Table(name = "users")
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@Entity
+@Table(name = "users")
 public class User {
 
     @Id
