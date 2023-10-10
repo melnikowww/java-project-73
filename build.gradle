@@ -52,6 +52,10 @@ dependencies {
 			'org.springframework.boot:spring-boot-starter-validation',
 			'org.springframework.boot:spring-boot-starter-security')
 
+	implementation 'io.jsonwebtoken:jjwt-api:0.11.5'
+	runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.11.5'
+	runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.11.5'
+
 	compileOnly 'org.projectlombok:lombok'
 	annotationProcessor 'org.projectlombok:lombok'
 
@@ -102,3 +106,33 @@ application {
 wrapper{
 	gradleVersion = '8.3'
 }
+// FRONTEND ////////////////////
+////////////////////////////////
+frontend {
+	nodeVersion = '16.13.1'
+	installScript = 'install'
+	assembleScript = 'run build'
+	packageJsonDirectory = file("${projectDir}/frontend")
+}
+
+def configFrontendTasks = {
+	inputs.files(fileTree("$projectDir/frontend").exclude('build', 'node_modules'))
+	outputs.dir("$buildDir/resources/main/static")
+}
+
+assembleFrontend {
+	configure configFrontendTasks
+
+	doLast {
+		copy {
+			from "$projectDir/frontend/build"
+			into "$buildDir/resources/main/static"
+		}
+	}
+}
+
+installFrontend {
+	configure configFrontendTasks
+}
+
+processResources.dependsOn assembleFrontend

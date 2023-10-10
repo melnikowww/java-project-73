@@ -18,6 +18,8 @@ public class UserServiceImpl implements UserService {
     PasswordEncoder encoder;
     @Autowired
     UserRepository userRepository;
+//    @Autowired
+//    JWTUtils jwtUtils;
 
     @Override
     public User createUser(UserDto userDto) {
@@ -26,6 +28,8 @@ public class UserServiceImpl implements UserService {
         user.setLastName(userDto.getLastName());
         user.setEmail(userDto.getEmail());
         user.setPassword(encoder.encode(userDto.getPassword()));
+        user.setUserRole(userDto.getRole());
+//        String jwtToken = jwtUtils.generateToken(user);
         return userRepository.save(user);
     }
 
@@ -36,6 +40,7 @@ public class UserServiceImpl implements UserService {
         user.setLastName(userDto.getLastName());
         user.setEmail(userDto.getEmail());
         user.setPassword(encoder.encode(userDto.getPassword()));
+        user.setUserRole(userDto.getRole());
         return userRepository.save(user);
     }
 }

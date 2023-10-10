@@ -1,11 +1,16 @@
 package hexlet.code.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+////import com.github.database.rider.core.api.dataset.DataSet;
 //import com.github.database.rider.core.api.dataset.DataSet;
+//import com.github.database.rider.junit5.api.DBRider;
+import hexlet.code.UserRole;
 import hexlet.code.controllers.UserController;
+import hexlet.code.dto.LogInDto;
 import hexlet.code.dto.UserDto;
 import hexlet.code.model.User;
 import hexlet.code.repository.UserRepository;
+import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
@@ -25,7 +30,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 
 @SpringBootTest
 @AutoConfigureMockMvc
-//@Transactional
+@Transactional
 //@DBRider
 //@DataSet("users.yml")
 public class UserControllerTest {
@@ -43,8 +48,8 @@ public class UserControllerTest {
 
     @BeforeEach
     void addUsers() throws Exception {
-        UserDto userDto1 = new UserDto("petr@ya.ru", "Petr", "Petrovich", "petrusha13");
-        UserDto userDto2 = new UserDto("senya@mail.ru", "Semyon", "Semyonich", "sem777");
+        UserDto userDto1 = new UserDto("petr@ya.ru", "Petr", "Petrovich", "petrusha13", UserRole.USER);
+        UserDto userDto2 = new UserDto("senya@mail.ru", "Semyon", "Semyonich", "sem777", UserRole.USER);
 
         mockMvc.perform(post(baseUrl + "/api/users")
             .contentType(MediaType.APPLICATION_JSON)
@@ -72,9 +77,28 @@ public class UserControllerTest {
 
     @Test
     public void getUserByIdTest() throws Exception {
-        Long id = 2L;
+        User user = userRepository.findUserByEmail("senya@mail.ru").orElseThrow();
+
+        assertThat(user).isNotNull();
+
+        LogInDto logInDto = new LogInDto("senya@mail.ru", "sem777");
+
+        MockHttpServletResponse login = mockMvc
+            .perform(post(baseUrl + "/api/login")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(logInDto)))
+            .andReturn()
+            .getResponse();
+
+        assertThat(login.getStatus()).isEqualTo(200);
+
+        String token = login.getContentAsString();
+
+        Long id = user.getId();
+
         MockHttpServletResponse response = mockMvc
-            .perform(get(baseUrl + "/api/users/" + id))
+            .perform(get(baseUrl + "/api/users/" + id)
+                .header("Authorization", "Bearer " + token))
             .andReturn().getResponse();
 
         assertThat(response.getStatus()).isEqualTo(200);
@@ -100,7 +124,7 @@ public class UserControllerTest {
 
         assertThat(response.getStatus()).isEqualTo(201);
 
-        User user = userRepository.findUserByEmail("ivan@mail.ru");
+        User user = userRepository.findUserByEmail("ivan@mail.ru").orElseThrow();
         assertThat(user).isNotNull();
         assertThat(user.getFirstName()).isEqualTo("Ivan");
         assertThat(user.getPassword()).isNotEqualTo("12345");
@@ -108,18 +132,33 @@ public class UserControllerTest {
 
     @Test
     public void updateUserTest() throws Exception {
-        User user = userRepository.findUserByEmail("senya@mail.ru");
-        UserDto userDto = new UserDto(user.getEmail(), "Senya", user.getLastName(), "666777");
+        User user = userRepository.findUserByEmail("senya@mail.ru").orElseThrow();
+        UserDto userDto = new UserDto(user.getEmail(), "Senya", user.getLastName(), "666777", UserRole.USER);
+
+        LogInDto logInDto = new LogInDto(user.getEmail(), "sem777");
+
+        MockHttpServletResponse login = mockMvc
+            .perform(post(baseUrl + "/api/login")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(logInDto)))
+            .andReturn()
+            .getResponse();
+
+        assertThat(login.getStatus()).isEqualTo(200);
+
+        String token = login.getContentAsString();
+
 
         MockHttpServletResponse response = mockMvc
             .perform(put(baseUrl + "/api/users/" + user.getId())
+                .header("Authorization", "Bearer " + token)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(userDto)))
             .andReturn().getResponse();
 
         assertThat(response.getStatus()).isEqualTo(200);
 
-        user = userRepository.findUserByEmail("senya@mail.ru");
+        user = userRepository.findUserByEmail("senya@mail.ru").orElseThrow();
         assertThat(user.getFirstName()).isEqualTo("Senya");
     }
 
