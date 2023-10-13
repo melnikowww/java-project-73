@@ -17,11 +17,11 @@ import java.util.List;
 public class UserDetailsServiceImpl implements UserDetailsService {
 
     @Autowired
-    UserRepository repository;
+    UserRepository userRepository;
 
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        User user = repository.findUserByEmail(email).orElseThrow();
+        User user = userRepository.findUserByEmail(email).orElseThrow();
         String role = user.getUserRole().name();
 
         List<SimpleGrantedAuthority> authorities = List.of(new SimpleGrantedAuthority(role));

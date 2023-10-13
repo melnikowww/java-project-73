@@ -1,10 +1,11 @@
 package hexlet.code.controllers;
 
 
+import hexlet.code.UserRole;
 import hexlet.code.dto.LogInDto;
 import hexlet.code.dto.UserDto;
 import hexlet.code.model.User;
-import hexlet.code.repository.UserRepository;
+import hexlet.code.repository.TaskRepository;
 import hexlet.code.config.security.JwtUtils;
 import hexlet.code.service.LogInService;
 import hexlet.code.service.UserService;
@@ -32,7 +33,7 @@ import java.util.List;
 public class UserController {
 
     @Autowired
-    UserRepository userRepository;
+    hexlet.code.repository.UserRepository userRepository;
     @Autowired
     UserService userService;
     @Autowired
@@ -40,6 +41,9 @@ public class UserController {
 
     @Autowired
     JwtUtils jwtUtils;
+
+    @Autowired
+    TaskRepository taskRepository;
 
     @GetMapping(
         path = "/users/{id}",
@@ -57,14 +61,13 @@ public class UserController {
 
     @PostMapping(path = "/users")
     public ResponseEntity<User> createUser(@Valid @RequestBody UserDto userDto) {
-        User user = new User();
-        user.setFirstName(userDto.getFirstName());
-        user.setLastName(userDto.getLastName());
-        user.setEmail(userDto.getEmail());
-        user.setPassword(userDto.getPassword());
-        user.setUserRole(userDto.getRole());
-        user.setCreatedAt(userDto.getCreatedAt());
-//        String jwtToken = jwtUtils.generateToken(user);
+//        User user = new User();
+//        user.setFirstName(userDto.getFirstName());
+//        user.setLastName(userDto.getLastName());
+//        user.setEmail(userDto.getEmail());
+//        user.setPassword(userDto.getPassword());
+        userDto.setRole(UserRole.USER);
+//        user.setCreatedAt(userDto.getCreatedAt());
         return ResponseEntity.status(201).body(userService.createUser(userDto));
     }
 
@@ -82,6 +85,8 @@ public class UserController {
     public void deleteUser(@PathVariable Long id) {
         User user = userRepository.findUserById(id)
             .orElseThrow(() -> new UsernameNotFoundException("No one user was found!"));
-        userRepository.delete(user);
+        if (taskRepository.findByAuthor(user).isEmpty()) {
+            userRepository.delete(user);
+        }
     }
 }

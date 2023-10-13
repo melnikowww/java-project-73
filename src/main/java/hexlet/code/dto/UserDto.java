@@ -15,14 +15,14 @@ public class UserDto {
     private String firstName;
     private String lastName;
     private String password;
+
     private Timestamp createdAt;
     private UserRole role;
 
-    public UserDto(String email, String firstName, String lastName, String password, UserRole role) {
+    public UserDto(String email, String firstName, String lastName, String password) {
         this.email = email;
         this.firstName = firstName;
         this.lastName = lastName;
         this.password = password;
-        this.role = role;
     }
 }

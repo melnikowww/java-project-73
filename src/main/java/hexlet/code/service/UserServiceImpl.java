@@ -2,7 +2,7 @@ package hexlet.code.service;
 
 import hexlet.code.dto.UserDto;
 import hexlet.code.model.User;
-import hexlet.code.repository.UserRepository;
+import hexlet.code.repository.TaskRepository;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,9 +17,10 @@ public class UserServiceImpl implements UserService {
     @Autowired
     PasswordEncoder encoder;
     @Autowired
-    UserRepository userRepository;
-//    @Autowired
-//    JWTUtils jwtUtils;
+    hexlet.code.repository.UserRepository userRepository;
+
+    @Autowired
+    TaskRepository taskRepository;
 
     @Override
     public User createUser(UserDto userDto) {
@@ -29,7 +30,6 @@ public class UserServiceImpl implements UserService {
         user.setEmail(userDto.getEmail());
         user.setPassword(encoder.encode(userDto.getPassword()));
         user.setUserRole(userDto.getRole());
-//        String jwtToken = jwtUtils.generateToken(user);
         return userRepository.save(user);
     }
 
@@ -40,7 +40,7 @@ public class UserServiceImpl implements UserService {
         user.setLastName(userDto.getLastName());
         user.setEmail(userDto.getEmail());
         user.setPassword(encoder.encode(userDto.getPassword()));
-        user.setUserRole(userDto.getRole());
+        user.setUserRole(user.getUserRole());
         return userRepository.save(user);
     }
 }
