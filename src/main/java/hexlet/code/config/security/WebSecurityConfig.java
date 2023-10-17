@@ -39,7 +39,7 @@ public class WebSecurityConfig {
             .requestMatchers(HttpMethod.GET, "/api/tasks/**").permitAll()
             .requestMatchers(HttpMethod.GET, "/api-docs").permitAll()
             .requestMatchers(HttpMethod.GET, "/swagger-ui/**").permitAll()
-            .anyRequest().permitAll()
+            .anyRequest().authenticated()
             .and()
             .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
             .and()
