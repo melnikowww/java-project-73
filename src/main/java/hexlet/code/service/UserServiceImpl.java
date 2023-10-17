@@ -6,6 +6,7 @@ import hexlet.code.repository.TaskRepository;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
@@ -18,7 +19,6 @@ public class UserServiceImpl implements UserService {
     PasswordEncoder encoder;
     @Autowired
     hexlet.code.repository.UserRepository userRepository;
-
     @Autowired
     TaskRepository taskRepository;
 
@@ -42,5 +42,14 @@ public class UserServiceImpl implements UserService {
         user.setPassword(encoder.encode(userDto.getPassword()));
         user.setUserRole(user.getUserRole());
         return userRepository.save(user);
+    }
+
+    @Override
+    public void deleteUser(Long id) {
+        User user = userRepository.findUserById(id)
+            .orElseThrow(() -> new UsernameNotFoundException("No one user was found!"));
+        if (taskRepository.findByAuthor(user).isEmpty()) {
+            userRepository.delete(user);
+        }
     }
 }

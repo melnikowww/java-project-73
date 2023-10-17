@@ -1,13 +1,8 @@
 package hexlet.code.controller;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import hexlet.code.dto.LabelDto;
-import hexlet.code.model.Label;
 import hexlet.code.repository.LabelRepository;
-import hexlet.code.repository.TaskRepository;
-import hexlet.code.repository.TaskStatusRepository;
-import hexlet.code.repository.UserRepository;
 import hexlet.code.utils.TestUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -50,9 +45,10 @@ public class LabelControllerTest {
         utils.addUser();
         utils.loginUser();
         token = utils.token;
-        utils.addTaskStatus();
+        utils.addTaskStatus("NEW_STAT1");
         utils.addTask();
-        utils.addLabels();
+        utils.addLabels("TEST_LABEL");
+        utils.addLabels("TEST_LABEL_1");
     }
 
     @Test
@@ -134,6 +130,23 @@ public class LabelControllerTest {
 
         assertThat(response.getStatus()).isEqualTo(200);
         assertThat(labelRepository.findByName("TEST_LABEL").isEmpty()).isTrue();
+    }
+
+    @Test
+    public void deleteLabelRefByTaskTest() throws Exception {
+        utils.addTaskWithLabel();
+
+        Long id = labelRepository.findByName("TEST_LABEL").orElseThrow().getId();
+
+        MockHttpServletResponse response = mockMvc
+            .perform(
+                delete(base + "/" + id)
+                    .header("Authorization", "Bearer " + token)
+            )
+            .andReturn().getResponse();
+
+        assertThat(response.getStatus()).isEqualTo(200);
+        assertThat(labelRepository.findByName("TEST_LABEL").isEmpty()).isFalse();
     }
 
 }

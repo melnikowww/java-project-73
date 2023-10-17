@@ -1,17 +1,16 @@
 package hexlet.code.dto;
 
-import lombok.AllArgsConstructor;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.sql.Timestamp;
-
 @Data
 @NoArgsConstructor
-@AllArgsConstructor
 public class TaskStatusDto {
+    @Size(min = 1)
+    @NotBlank
     private String name;
-    private Timestamp createdAt;
 
     public TaskStatusDto(String name) {
         this.name = name;

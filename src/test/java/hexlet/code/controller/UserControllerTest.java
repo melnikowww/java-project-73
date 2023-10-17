@@ -47,22 +47,7 @@ public class UserControllerTest {
 
     @BeforeEach
     void addUsers() throws Exception {
-//        UserDto userDto1 = new UserDto("petr@ya.ru", "Petr", "Petrovich", "petrusha13");
-//        UserDto userDto2 = new UserDto("senya@mail.ru", "Semyon", "Semyonich", "sem777");
-//
-//
-//        mockMvc.perform(post(baseUrl + "/api/users")
-//            .contentType(MediaType.APPLICATION_JSON)
-//            .content(objectMapper.writeValueAsString(userDto1)))
-//            .andReturn();
-//
-//        mockMvc.perform(post(baseUrl + "/api/users")
-//                .contentType(MediaType.APPLICATION_JSON)
-//                .content(objectMapper.writeValueAsString(userDto2)))
-//            .andReturn();
-
         utils.addUsers();
-
     }
 
     @Test

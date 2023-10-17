@@ -25,20 +25,20 @@ public class WebSecurityConfig {
     private final JwtAuthFilter jwtAuthFilter;
     private final UserDetailsService userDetailsService;
 
-
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
         httpSecurity.csrf().disable();
 
         httpSecurity
             .authorizeHttpRequests()
-//            .requestMatchers(HttpMethod.GET, "/api/users").permitAll()
-//            .requestMatchers(HttpMethod.POST, "/api/users").permitAll()
-//            .requestMatchers(HttpMethod.POST, "/api/login").permitAll()
-//            .requestMatchers(HttpMethod.GET, "/welcome", "/").permitAll()
-//            .requestMatchers(HttpMethod.GET, "/api/statuses/**").permitAll()
-//            .requestMatchers(HttpMethod.GET, "/api/tasks/**").permitAll()
-//            .requestMatchers(HttpMethod.GET, "/h2console/").permitAll()
+            .requestMatchers(HttpMethod.GET, "/api/users").permitAll()
+            .requestMatchers(HttpMethod.POST, "/api/users").permitAll()
+            .requestMatchers(HttpMethod.POST, "/api/login").permitAll()
+            .requestMatchers(HttpMethod.GET, "/welcome", "/").permitAll()
+            .requestMatchers(HttpMethod.GET, "/api/statuses/**").permitAll()
+            .requestMatchers(HttpMethod.GET, "/api/tasks/**").permitAll()
+            .requestMatchers(HttpMethod.GET, "/api-docs").permitAll()
+            .requestMatchers(HttpMethod.GET, "/swagger-ui/**").permitAll()
             .anyRequest().permitAll()
             .and()
             .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)

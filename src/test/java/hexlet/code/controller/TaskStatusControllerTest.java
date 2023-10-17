@@ -1,11 +1,10 @@
 package hexlet.code.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import hexlet.code.dto.LogInDto;
 import hexlet.code.dto.TaskStatusDto;
-import hexlet.code.dto.UserDto;
 import hexlet.code.model.TaskStatus;
 import hexlet.code.repository.TaskStatusRepository;
+import hexlet.code.utils.TestUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,6 +38,9 @@ public class TaskStatusControllerTest {
     @Autowired
     ObjectMapper objectMapper;
 
+    @Autowired
+    TestUtils utils;
+
 //    private static final Logger LOGGER = LoggerFactory.getLogger(TaskStatusController.class);
 
     private final String login = "http://localhost:8080/api/login";
@@ -49,27 +51,11 @@ public class TaskStatusControllerTest {
 
     @BeforeEach
     void prepare() throws Exception {
-        UserDto userDto = new UserDto("senya@mail.ru", "Semyon", "Semyonich", "sem777");
-
-        mockMvc.perform(post(users)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(userDto)))
-            .andReturn();
-
-        LogInDto logInDto = new LogInDto(userDto.getEmail(), userDto.getPassword());
-
-        token = mockMvc.perform(post(login)
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(objectMapper.writeValueAsBytes(logInDto))
-        )
-            .andReturn()
-            .getResponse().getContentAsString();
-
-        TaskStatus taskStatus1 = new TaskStatus("NEW_STAT1");
-        repository.save(taskStatus1);
-
-        TaskStatus taskStatus2 = new TaskStatus("NEW_STAT2");
-        repository.save(taskStatus2);
+        utils.addUsers();
+        utils.loginUser();
+        token = utils.token;
+        utils.addTaskStatus("NEW_STAT1");
+        utils.addTaskStatus("NEW_STAT2");
     }
 
     @Test

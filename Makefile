@@ -2,7 +2,7 @@ clean:
 	./gradlew clean
 
 build:
-	./gradlew clean build
+	SPRING_PROFILES_ACTIVE=development ./gradlew clean build
 
 install:
 	./gradlew clean install
@@ -23,7 +23,7 @@ run:
 	./gradlew bootRun
 
 test:
-	./gradlew test
+	SPRING_PROFILES_ACTIVE=development ./gradlew test
 
 report:
 	./gradlew jacocoTestReport
@@ -36,6 +36,9 @@ update-deps:
 
 stage:
 	./gradlew stage
+
+swagger:
+	gradle clean generateOpenApiDocs
 
 .PHONY: build
 

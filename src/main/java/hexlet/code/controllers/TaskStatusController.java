@@ -5,9 +5,12 @@ import hexlet.code.model.TaskStatus;
 import hexlet.code.repository.TaskRepository;
 import hexlet.code.repository.TaskStatusRepository;
 import hexlet.code.service.TaskStatusService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -16,13 +19,13 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
-import java.util.NoSuchElementException;
 
 @RestController
-@RequestMapping("/api/statuses")
+@RequestMapping("${base.url}")
 @Validated
 public class TaskStatusController {
 
@@ -33,48 +36,65 @@ public class TaskStatusController {
     @Autowired
     TaskRepository taskRepository;
 
-
-
+    @Operation(summary = "Get all task statuses")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "List of task statuses")
+    })
     @GetMapping(
-        path = "",
+        path = "/statuses",
         produces = "application/json"
     )
-    public ResponseEntity<List<TaskStatus>> getStatuses() {
-        return ResponseEntity.ok(taskStatusRepository.findAll());
+    public List<TaskStatus> getStatuses() {
+        return taskStatusRepository.findAll();
     }
 
+    @Operation(summary = "Get task status by id")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Get specific task status by id")
+    })
     @GetMapping(
-        path = "/{id}",
+        path = "/statuses/{id}",
         produces = "application/json"
     )
-    public ResponseEntity<TaskStatus> getStatus(@Valid @PathVariable Long id) {
-        return ResponseEntity.ok(taskStatusRepository.findById(id).orElseThrow());
+    public TaskStatus getTaskStatus(@Valid @PathVariable Long id) {
+        return taskStatusRepository.findById(id).orElseThrow();
     }
 
+    @Operation(summary = "Create new task status")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "201", description = "Task status is successfully created"),
+        @ApiResponse(responseCode = "422", description = "Data is not valid")
+    })
+    @ResponseStatus(HttpStatus.CREATED)
     @PostMapping(
-        path = "",
+        path = "/statuses",
         produces = "application/json"
     )
-    public ResponseEntity<TaskStatus> createStatus(@Valid @RequestBody TaskStatusDto dto) {
-        return ResponseEntity.status(201).body(taskStatusService.createStatus(dto));
+    public TaskStatus createStatus(@Valid @RequestBody TaskStatusDto dto) {
+        return taskStatusService.createStatus(dto);
     }
 
+    @Operation(summary = "Update task status")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Task status is successfully updated"),
+        @ApiResponse(responseCode = "422", description = "Data is not valid")
+    })
     @PutMapping(
-        path = "/{id}",
+        path = "/statuses/{id}",
         produces = "application/json"
     )
-    public ResponseEntity<TaskStatus> updateStatus(@PathVariable Long id, @Valid @RequestBody TaskStatusDto dto) {
-        return ResponseEntity.status(200).body(taskStatusService.updateStatus(dto, id));
+    public TaskStatus updateStatus(@PathVariable Long id, @Valid @RequestBody TaskStatusDto dto) {
+        return taskStatusService.updateStatus(dto, id);
     }
 
+    @Operation(summary = "Delete task status by id")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Delete task status by id")
+    })
     @DeleteMapping(
-        path = "/{id}"
+        path = "/statuses/{id}"
     )
     public void deleteStatus(@PathVariable Long id) {
-        TaskStatus taskStatus = taskStatusRepository.findById(id)
-            .orElseThrow(() -> new NoSuchElementException("No one status was found!"));
-        if (taskRepository.findByTaskStatus(taskStatus).isEmpty()) {
-            taskStatusRepository.deleteById(id);
-        }
+        taskStatusRepository.deleteById(id);
     }
 }

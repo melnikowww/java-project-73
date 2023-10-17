@@ -1,19 +1,17 @@
 package hexlet.code.controllers;
 
-
 import hexlet.code.UserRole;
-import hexlet.code.dto.LogInDto;
 import hexlet.code.dto.UserDto;
 import hexlet.code.model.User;
-import hexlet.code.repository.TaskRepository;
-import hexlet.code.config.security.JwtUtils;
-import hexlet.code.service.LogInService;
+import hexlet.code.repository.UserRepository;
 import hexlet.code.service.UserService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;
 
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.http.HttpStatus;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -22,71 +20,73 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
-
 
 import java.util.List;
 
 @Validated
 @RestController()
-@RequestMapping(path = "/api")
+@RequestMapping("${base.url}")
 public class UserController {
 
     @Autowired
-    hexlet.code.repository.UserRepository userRepository;
+    UserRepository userRepository;
     @Autowired
     UserService userService;
-    @Autowired
-    LogInService logInService;
 
-    @Autowired
-    JwtUtils jwtUtils;
-
-    @Autowired
-    TaskRepository taskRepository;
-
+    @Operation(summary = "Get user by id")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Get specific user by id")
+    })
     @GetMapping(
         path = "/users/{id}",
         produces = "application/json")
-    public ResponseEntity<User> getUserById(@PathVariable Long id) {
-        return ResponseEntity.status(200).body(userRepository.findById(id).orElseThrow());
+    public User getUser(@PathVariable Long id) {
+        return userRepository.findById(id).orElseThrow();
     }
 
+    @Operation(summary = "Get all users")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "List of all users")
+    })
     @GetMapping(
         path = "/users",
         produces = "application/json")
-    public ResponseEntity<List<User>> getUsers() {
-        return ResponseEntity.status(200).body(userRepository.findAll());
+    public List<User> getUsers() {
+        return userRepository.findAll();
     }
 
+    @Operation(summary = "Create new user")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "201", description = "User is successfully created"),
+        @ApiResponse(responseCode = "422", description = "Data is not valid")
+    })
+    @ResponseStatus(HttpStatus.CREATED)
     @PostMapping(path = "/users")
-    public ResponseEntity<User> createUser(@Valid @RequestBody UserDto userDto) {
-//        User user = new User();
-//        user.setFirstName(userDto.getFirstName());
-//        user.setLastName(userDto.getLastName());
-//        user.setEmail(userDto.getEmail());
-//        user.setPassword(userDto.getPassword());
-        userDto.setRole(UserRole.USER);
-//        user.setCreatedAt(userDto.getCreatedAt());
-        return ResponseEntity.status(201).body(userService.createUser(userDto));
+    public User createUser(@Valid @RequestBody UserDto userDto) {
+        if (userDto.getRole() == null) {
+            userDto.setRole(UserRole.USER);
+        }
+        return userService.createUser(userDto);
     }
 
+    @Operation(summary = "Update user")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "User is successfully updated"),
+        @ApiResponse(responseCode = "422", description = "Data is not valid")
+    })
     @PutMapping(path = "/users/{id}")
-    public ResponseEntity<User> updateUser(@PathVariable Long id, @Valid @RequestBody UserDto userDto) {
-        return ResponseEntity.status(200).body(userService.updateUser(userDto, id));
+    public User updateUser(@PathVariable Long id, @Valid @RequestBody UserDto userDto) {
+        return userService.updateUser(userDto, id);
     }
 
-    @PostMapping("/login")
-    public ResponseEntity<String> authUser(@Valid @RequestBody LogInDto logInDto) {
-        return ResponseEntity.ok(logInService.authenticate(logInDto));
-    }
-
+    @Operation(summary = "Delete user by id")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Delete user by id")
+    })
     @DeleteMapping(path = "/users/{id}")
     public void deleteUser(@PathVariable Long id) {
-        User user = userRepository.findUserById(id)
-            .orElseThrow(() -> new UsernameNotFoundException("No one user was found!"));
-        if (taskRepository.findByAuthor(user).isEmpty()) {
-            userRepository.delete(user);
-        }
+        userService.deleteUser(id);
     }
 }

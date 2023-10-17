@@ -75,4 +75,12 @@ public class BaseExceptionHandler {
         return exception.getMessage();
     }
 
+//    JdbcSQLIntegrityConstraintViolationException
+
+//    @ResponseStatus(UNPROCESSABLE_ENTITY)
+//    @ExceptionHandler(JdbcSQLIntegrityConstraintViolationException.class)
+//    public String jdbcSQLIntegrityConstraintViolationExceptionHandler(
+//        JdbcSQLIntegrityConstraintViolationException exception) {
+//        return exception.getMessage();
+//    }
 }

@@ -3,9 +3,10 @@ plugins {
 	id 'checkstyle'
 	id 'org.springframework.boot' version '3.0.6'
 	id 'io.spring.dependency-management' version '1.1.0'
-	id 'org.liquibase.gradle' version '2.2.0'
+
 	id 'com.github.johnrengelman.processes' version '0.5.0'
-	id 'org.springdoc.openapi-gradle-plugin' version '1.6.0'
+	id 'org.springdoc.openapi-gradle-plugin' version '1.7.0'
+
 	id 'org.siouan.frontend-jdk11' version '6.0.0'
 	id 'jacoco'
 }
@@ -13,9 +14,9 @@ plugins {
 group = 'hexlet.code'
 version = '0.0.1-SNAPSHOT'
 
-//java {
-//	sourceCompatibility = '20'
-//}
+java {
+	sourceCompatibility = '20'
+}
 
 java {
 	toolchain {
@@ -42,35 +43,44 @@ repositories {
 dependencies {
 	developmentOnly 'org.springframework.boot:spring-boot-devtools'
 
-	implementation 'org.springframework.boot:spring-boot-starter-data-jdbc'
-	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-	implementation 'org.springframework.boot:spring-boot-starter-jdbc'
-	implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
-	implementation 'org.springframework.boot:spring-boot-starter-web'
-	implementation 'org.springframework.boot:spring-boot-devtools'
 	implementation(
 			'org.springframework.boot:spring-boot-starter-validation',
-			'org.springframework.boot:spring-boot-starter-security')
+			'org.springframework.boot:spring-boot-starter-data-jdbc',
+			'org.springframework.boot:spring-boot-starter-data-jpa',
+			'org.springframework.boot:spring-boot-starter-jdbc',
+			'org.springframework.boot:spring-boot-starter-thymeleaf',
+			'org.springframework.boot:spring-boot-starter-web',
+			'org.springframework.boot:spring-boot-devtools',
+			'io.jsonwebtoken:jjwt-api:0.11.5',
+			'org.springframework.boot:spring-boot-starter-security',
+			"net.datafaker:datafaker:2.0.1",
+			"org.instancio:instancio-junit:3.3.0",
+			"com.querydsl:querydsl-core:5.0.0",
+			"com.querydsl:querydsl-jpa:5.0.0:jakarta",
+			"org.springdoc:springdoc-openapi-starter-webmvc-ui:2.2.0",
+			'org.springframework.boot:spring-boot-starter-test')
 
-	implementation 'io.jsonwebtoken:jjwt-api:0.11.5'
-	runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.11.5'
-	runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.11.5'
+	runtimeOnly (
+			'io.jsonwebtoken:jjwt-impl:0.11.5',
+			'io.jsonwebtoken:jjwt-jackson:0.11.5',
+			'com.h2database:h2',
+			'org.postgresql:postgresql')
 
 	compileOnly 'org.projectlombok:lombok'
-	annotationProcessor 'org.projectlombok:lombok'
 
-	runtimeOnly 'com.h2database:h2'
-	runtimeOnly 'org.postgresql:postgresql'
+	annotationProcessor (
+			"com.querydsl:querydsl-apt:5.0.0:jakarta",
+			"jakarta.persistence:jakarta.persistence-api:3.1.0",
+			'org.projectlombok:lombok')
 
-	testImplementation 'com.github.database-rider:rider-junit5:1.36.0'
-	testImplementation(platform("org.junit:junit-bom:5.10.0"))
-	testImplementation("org.junit.jupiter:junit-jupiter:5.10.0")
-	testImplementation("org.springframework.boot:spring-boot-starter-test")
-	testImplementation("org.springframework.security:spring-security-test")
-	testImplementation("net.javacrumbs.json-unit:json-unit-assertj:3.2.2")
-
-	implementation("net.datafaker:datafaker:2.0.1")
-	implementation("org.instancio:instancio-junit:3.3.0")
+	testImplementation (
+			'com.github.database-rider:rider-junit5:1.36.0',
+			platform("org.junit:junit-bom:5.10.0"),
+			"org.junit.jupiter:junit-jupiter:5.10.0",
+			"org.springframework.boot:spring-boot-starter-test",
+			"org.springframework.security:spring-security-test",
+			"net.javacrumbs.json-unit:json-unit-assertj:3.2.2",
+			'org.springframework.boot:spring-boot-starter-test')
 }
 
 tasks.named('test') {
@@ -136,3 +146,7 @@ installFrontend {
 }
 
 processResources.dependsOn assembleFrontend
+
+openApi {
+	apiDocsUrl.set("http://localhost:8080/api-docs")
+}

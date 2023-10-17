@@ -6,4 +6,6 @@ import hexlet.code.model.User;
 public interface UserService {
     User createUser(UserDto userDto);
     User updateUser(UserDto userDto, Long id);
+
+    void deleteUser(Long id);
 }

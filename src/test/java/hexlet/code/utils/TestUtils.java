@@ -8,7 +8,7 @@ import hexlet.code.dto.TaskStatusDto;
 import hexlet.code.dto.UserDto;
 import hexlet.code.model.TaskStatus;
 import hexlet.code.model.User;
-import hexlet.code.repository.TaskRepository;
+import hexlet.code.repository.LabelRepository;
 import hexlet.code.repository.TaskStatusRepository;
 import hexlet.code.repository.UserRepository;
 import hexlet.code.service.LabelService;
@@ -19,9 +19,9 @@ import hexlet.code.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.util.HashSet;
+import java.util.ArrayList;
+import java.util.List;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 
 @Component
 public class TestUtils {
@@ -31,7 +31,7 @@ public class TestUtils {
     @Autowired
     TaskStatusRepository taskStatusRepository;
     @Autowired
-    TaskRepository taskRepository;
+    LabelRepository labelRepository;
     @Autowired
     UserService userService;
     @Autowired
@@ -44,10 +44,10 @@ public class TestUtils {
     LabelService labelService;
 
     public String token;
-    private final String email = "senya@mail.ru";
+    public final String email = "senya@mail.ru";
     private final String password = "sem777";
 
-    public void addUser() throws Exception {
+    public void addUser() {
         UserDto userDto = new UserDto("senya@mail.ru", "Semyon", "Semyonich", "sem777");
         userDto.setRole(UserRole.USER);
         userService.createUser(userDto);
@@ -68,8 +68,8 @@ public class TestUtils {
         token = logInService.authenticate(logInDto);
     }
 
-    public void addTaskStatus() {
-        TaskStatusDto dto = new TaskStatusDto("NEW_STAT1");
+    public void addTaskStatus(String name) {
+        TaskStatusDto dto = new TaskStatusDto(name);
         taskStatusService.createStatus(dto);
     }
 
@@ -82,16 +82,28 @@ public class TestUtils {
             status.getId(),
             user.getId(),
             user.getId(),
-            new HashSet<>()
+            new ArrayList<>()
         );
         taskService.createTask(dto);
     }
 
-    public void addLabels() {
-        LabelDto dto = new LabelDto("TEST_LABEL");
+    public void addLabels(String name) {
+        LabelDto dto = new LabelDto(name);
         labelService.createLabel(dto);
-        LabelDto dto1 = new LabelDto("TEST_LABEL_1");
-        labelService.createLabel(dto1);
+    }
+
+    public void addTaskWithLabel() {
+        User user = userRepository.findUserByEmail(email).orElseThrow();
+        TaskStatus status = taskStatusRepository.findByName("NEW_STAT1").orElseThrow();
+        TaskDto dto = new TaskDto(
+            "TEST_TASK_WITH_LABEL",
+            "TEST_DESC",
+            status.getId(),
+            user.getId(),
+            user.getId(),
+            List.of(labelRepository.findByName("TEST_LABEL").orElseThrow().getId())
+        );
+        taskService.createTask(dto);
     }
 
 }

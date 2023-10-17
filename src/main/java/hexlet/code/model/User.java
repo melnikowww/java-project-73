@@ -12,9 +12,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
-import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -40,21 +38,15 @@ public class User implements UserDetails {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Size(min = 1)
     @NotBlank
     private String firstName;
 
-    @Size(min = 1)
     @NotBlank
     private String lastName;
 
-    @Email
-    @NotBlank
     @Column(unique = true)
     private String email;
 
-    @Size(min = 3)
-    @NotBlank
     @JsonIgnore
     private String password;
 
