@@ -21,6 +21,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Properties;
 
 
 @Component
@@ -46,6 +47,10 @@ public class TestUtils {
     public String token;
     public final String email = "senya@mail.ru";
     private final String password = "sem777";
+
+    public void setProfile() {
+
+    }
 
     public void addUser() {
         UserDto userDto = new UserDto("senya@mail.ru", "Semyon", "Semyonich", "sem777");
