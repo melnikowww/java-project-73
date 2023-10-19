@@ -46,10 +46,6 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void deleteUser(Long id) {
-        User user = userRepository.findUserById(id)
-            .orElseThrow(() -> new UsernameNotFoundException("No one user was found!"));
-        if (taskRepository.findByAuthor(user).isEmpty()) {
-            userRepository.delete(user);
-        }
+        userRepository.deleteById(id);
     }
 }
