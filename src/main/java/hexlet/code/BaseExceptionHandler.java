@@ -1,6 +1,8 @@
 package hexlet.code;
 
+import com.rollbar.notifier.Rollbar;
 import jakarta.validation.ConstraintViolationException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -26,6 +28,9 @@ import java.util.NoSuchElementException;
 @ResponseBody
 @ControllerAdvice
 public class BaseExceptionHandler {
+
+    @Autowired
+    Rollbar rollbar;
 
     @ResponseStatus(UNAUTHORIZED)
     @ExceptionHandler(UsernameNotFoundException.class)
@@ -60,6 +65,7 @@ public class BaseExceptionHandler {
     @ResponseStatus(UNPROCESSABLE_ENTITY)
     @ExceptionHandler(DataIntegrityViolationException.class)
     public String validationExceptionsHandler(DataIntegrityViolationException exception) {
+        rollbar.debug(exception.getCause().getCause().getMessage());
         return exception.getCause().getCause().getMessage();
     }
 

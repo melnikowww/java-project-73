@@ -23,7 +23,7 @@ run:
 	./gradlew bootRun
 
 test:
-	SPRING_PROFILES_ACTIVE=development ./gradlew test
+	SPRING_PROFILES_ACTIVE=test ./gradlew test
 
 report:
 	./gradlew jacocoTestReport

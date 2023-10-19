@@ -41,7 +41,7 @@ public class LabelControllerTest {
     private final String base = "http://localhost:8080/api/labels";
 
     @BeforeEach
-    public void prepare() throws Exception {
+    public void prepare() {
         utils.addUser();
         utils.loginUser();
         token = utils.token;
