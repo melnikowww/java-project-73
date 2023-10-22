@@ -1,0 +1,16 @@
+spring:
+  output:
+    ansi:
+      enabled: always
+  thymeleaf:
+    check-template-location: 'false'
+  profiles:
+    active: ${PROFILE:test}
+  jpa:
+    show-sql: 'true'
+base:
+  url: /api
+rollbar:
+  token: ''
+jwt:
+  secret: 'YzNlNjVkZTQ3YjEyNWY5MWVmNWE2MjQyMzRiYmE4NTRmNGY0N2EzMDc3ZTIwYTUxNjM3ZGI0YTgyZWYyNjA0Mg=='
