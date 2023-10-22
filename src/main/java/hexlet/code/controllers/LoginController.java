@@ -6,7 +6,8 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.AllArgsConstructor;
+
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -15,11 +16,11 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @Validated
+@AllArgsConstructor
 @RequestMapping("${base.url}")
 public class LoginController {
 
-    @Autowired
-    LogInService logInService;
+    private final LogInService logInService;
 
     @Operation(summary = "Log in user")
     @ApiResponses(value = {

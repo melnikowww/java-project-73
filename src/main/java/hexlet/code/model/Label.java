@@ -5,13 +5,12 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
-import jakarta.persistence.Temporal;
-import jakarta.persistence.TemporalType;
-import java.sql.Timestamp;
+import java.time.Instant;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 import org.hibernate.annotations.CreationTimestamp;
 
 @Entity
@@ -19,6 +18,7 @@ import org.hibernate.annotations.CreationTimestamp;
 @AllArgsConstructor
 @NoArgsConstructor
 @Table(name = "labels")
+@ToString
 public class Label {
 
     @Id
@@ -28,7 +28,6 @@ public class Label {
     private String name;
 
     @CreationTimestamp
-    @Temporal(TemporalType.TIMESTAMP)
-    private Timestamp createdAt;
+    private Instant createdAt;
 
 }

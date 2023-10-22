@@ -5,20 +5,20 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
-import jakarta.persistence.Temporal;
-import jakarta.persistence.TemporalType;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 import org.hibernate.annotations.CreationTimestamp;
 
-import java.sql.Timestamp;
+import java.time.Instant;
 
 @Data
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
 @Table(name = "task_statuses")
+@ToString
 public class TaskStatus {
 
     @Id
@@ -28,8 +28,7 @@ public class TaskStatus {
     private String name;
 
     @CreationTimestamp
-    @Temporal(TemporalType.TIMESTAMP)
-    private Timestamp createdAt;
+    private Instant createdAt;
 
     public TaskStatus(String name) {
         this.name = name;

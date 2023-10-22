@@ -8,7 +8,7 @@ install:
 	./gradlew clean install
 
 start:
-	SPRING_PROFILES_ACTIVE=development ./gradlew bootRun
+	./gradlew bootRun --args='--spring.profiles.active=development'
 
 start-prod:
 	./gradlew bootRun --args='--spring.profiles.active=production'
@@ -17,13 +17,13 @@ run-dist:
 	./build/install/app/bin/app
 
 start-dist:
-	APP_ENV=production ./build/install/app/bin/app
+	./build/install/app/bin/app
 
 run:
 	./gradlew bootRun
 
 test:
-	SPRING_PROFILES_ACTIVE=test ./gradlew test
+	./gradlew test
 
 report:
 	./gradlew jacocoTestReport

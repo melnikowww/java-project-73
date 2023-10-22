@@ -8,7 +8,8 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.AllArgsConstructor;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -25,13 +26,12 @@ import java.util.List;
 
 @RestController
 @Validated
+@AllArgsConstructor
 @RequestMapping("${base.url}")
 public class LabelController {
 
-    @Autowired
-    LabelRepository labelRepository;
-    @Autowired
-    LabelService labelService;
+    private final LabelRepository labelRepository;
+    private final LabelService labelService;
 
     @Operation(summary = "Get all labels")
     @ApiResponses(value = {

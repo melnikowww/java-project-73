@@ -2,14 +2,13 @@ package hexlet.code.controllers;
 
 import hexlet.code.dto.TaskStatusDto;
 import hexlet.code.model.TaskStatus;
-import hexlet.code.repository.TaskRepository;
 import hexlet.code.repository.TaskStatusRepository;
 import hexlet.code.service.TaskStatusService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -27,14 +26,11 @@ import java.util.List;
 @RestController
 @RequestMapping("${base.url}")
 @Validated
+@AllArgsConstructor
 public class TaskStatusController {
 
-    @Autowired
-    TaskStatusRepository taskStatusRepository;
-    @Autowired
-    TaskStatusService taskStatusService;
-    @Autowired
-    TaskRepository taskRepository;
+    private final TaskStatusRepository taskStatusRepository;
+    private final TaskStatusService taskStatusService;
 
     @Operation(summary = "Get all task statuses")
     @ApiResponses(value = {

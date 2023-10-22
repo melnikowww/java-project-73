@@ -10,8 +10,10 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;
 
+import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -28,12 +30,15 @@ import java.util.List;
 @Validated
 @RestController()
 @RequestMapping("${base.url}")
+@AllArgsConstructor
+@EnableMethodSecurity(prePostEnabled = true)
 public class UserController {
 
-    @Autowired
-    UserRepository userRepository;
-    @Autowired
-    UserService userService;
+    private final UserRepository userRepository;
+    private final UserService userService;
+    private static final String ONLY_OWNER_BY_ID = """
+            @userRepository.findById(#id).get().getEmail() == authentication.getName()
+        """;
 
     @Operation(summary = "Get user by id")
     @ApiResponses(value = {
@@ -76,6 +81,7 @@ public class UserController {
         @ApiResponse(responseCode = "200", description = "User is successfully updated"),
         @ApiResponse(responseCode = "422", description = "Data is not valid")
     })
+    @PreAuthorize(ONLY_OWNER_BY_ID)
     @PutMapping(path = "/users/{id}")
     public User updateUser(@PathVariable Long id, @Valid @RequestBody UserDto userDto) {
         return userService.updateUser(userDto, id);
@@ -85,6 +91,7 @@ public class UserController {
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "Delete user by id")
     })
+    @PreAuthorize(ONLY_OWNER_BY_ID)
     @DeleteMapping(path = "/users/{id}")
     public void deleteUser(@PathVariable Long id) {
         userService.deleteUser(id);

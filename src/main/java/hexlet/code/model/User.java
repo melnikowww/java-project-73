@@ -10,20 +10,19 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
-import jakarta.persistence.Temporal;
-import jakarta.persistence.TemporalType;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 import org.hibernate.annotations.CreationTimestamp;
 
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 
-import java.sql.Timestamp;
+import java.time.Instant;
 import java.util.Collection;
 
 @Data
@@ -32,6 +31,7 @@ import java.util.Collection;
 @AllArgsConstructor
 @Entity
 @Table(name = "users")
+@ToString
 public class User implements UserDetails {
 
     @Id
@@ -51,8 +51,7 @@ public class User implements UserDetails {
     private String password;
 
     @CreationTimestamp
-    @Temporal(TemporalType.TIMESTAMP)
-    private Timestamp createdAt;
+    private Instant createdAt;
     @JsonIgnore
     @Enumerated(EnumType.STRING)
     private UserRole userRole;

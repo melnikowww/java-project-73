@@ -1,9 +1,12 @@
 package hexlet.code.controller;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import hexlet.code.dto.LabelDto;
+import hexlet.code.model.Label;
 import hexlet.code.repository.LabelRepository;
 import hexlet.code.utils.TestUtils;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,8 +15,9 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.transaction.annotation.Transactional;
 
+
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -23,20 +27,19 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 
 
-@Transactional
 @SpringBootTest
 @AutoConfigureMockMvc
 public class LabelControllerTest {
 
     @Autowired
-    LabelRepository labelRepository;
+    private LabelRepository labelRepository;
     @Autowired
-    MockMvc mockMvc;
+    private MockMvc mockMvc;
     @Autowired
-    ObjectMapper objectMapper;
+    private ObjectMapper objectMapper;
     @Autowired
-    TestUtils utils;
-    String token;
+    private TestUtils utils;
+    private String token;
 
     private final String base = "http://localhost:8080/api/labels";
 
@@ -51,6 +54,11 @@ public class LabelControllerTest {
         utils.addLabels("TEST_LABEL_1");
     }
 
+    @AfterEach
+    void clean() {
+        utils.clean();
+    }
+
     @Test
     public void getLabelsTest() throws Exception {
         MockHttpServletResponse response = mockMvc
@@ -63,6 +71,11 @@ public class LabelControllerTest {
         assertThat(response.getStatus()).isEqualTo(200);
         assertThat(response.getContentAsString()).contains("TEST_LABEL");
         assertThat(response.getContentAsString()).contains("TEST_LABEL_1");
+
+        final List<Label> labelList = objectMapper.readValue(response.getContentAsString(), new TypeReference<>() { });
+        for (Label label: labelList) {
+            assertThat(labelRepository.findAll().contains(label));
+        }
     }
 
     @Test
@@ -78,6 +91,10 @@ public class LabelControllerTest {
 
         assertThat(response.getStatus()).isEqualTo(200);
         assertThat(response.getContentAsString()).contains("TEST_LABEL");
+
+        final Label label = objectMapper.readValue(response.getContentAsString(), new TypeReference<>() { });
+        assertThat(label.getName())
+            .isEqualTo(labelRepository.findById(labelId).orElseThrow().getName());
     }
 
     @Test
@@ -114,7 +131,8 @@ public class LabelControllerTest {
 
         assertThat(response.getStatus()).isEqualTo(200);
         assertThat(response.getContentAsString()).contains("NEW_LABEL");
-        assertThat(labelRepository.findByName("TEST_LABEL").isEmpty()).isTrue();
+        assertThat(labelRepository.findByName("TEST_LABEL")).isEmpty();
+        assertThat(labelRepository.findByName(dto.getName())).isPresent();
     }
 
     @Test
@@ -145,7 +163,7 @@ public class LabelControllerTest {
             )
             .andReturn().getResponse();
 
-        assertThat(response.getStatus()).isEqualTo(200);
+        assertThat(response.getStatus()).isEqualTo(422);
         assertThat(labelRepository.findByName("TEST_LABEL").isEmpty()).isFalse();
     }
 

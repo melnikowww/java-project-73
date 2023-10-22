@@ -94,13 +94,4 @@ public class TaskServiceImpl implements TaskService {
         return predicate == null ? taskRepository.findAll() : taskRepository.findAll(predicate);
     }
 
-    @Override
-    public void deleteTask(Long id, String token) {
-        if (isAuthor(token, id)) {
-            taskRepository.deleteById(id);
-        } else {
-            throw new RuntimeException("Only author can delete this task! You can't!");
-        }
-    }
-
 }

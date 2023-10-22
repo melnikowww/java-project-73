@@ -1,5 +1,6 @@
 package hexlet.code.controller;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import hexlet.code.controllers.UserController;
 import hexlet.code.dto.LogInDto;
@@ -7,7 +8,7 @@ import hexlet.code.dto.UserDto;
 import hexlet.code.model.User;
 import hexlet.code.repository.UserRepository;
 import hexlet.code.utils.TestUtils;
-import jakarta.transaction.Transactional;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
@@ -19,6 +20,8 @@ import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.util.List;
+
 import static net.javacrumbs.jsonunit.assertj.JsonAssertions.assertThatJson;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -27,9 +30,6 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 
 @SpringBootTest
 @AutoConfigureMockMvc
-@Transactional
-//@DBRider
-//@DataSet("users.yml")
 public class UserControllerTest {
 
     @Autowired
@@ -37,18 +37,26 @@ public class UserControllerTest {
     @Autowired
     private UserRepository userRepository;
     @Autowired
-    ObjectMapper objectMapper;
+    private ObjectMapper objectMapper;
 
     private static final Logger LOGGER = LoggerFactory.getLogger(UserController.class);
 
     private String baseUrl = "http://localhost:8080";
+    private String token;
     @Autowired
-    TestUtils utils;
+    private TestUtils utils;
 
     @BeforeEach
-    void addUsers() throws Exception {
+    void addUsers() {
         utils.addUsers();
+        utils.loginUser();
+        token = utils.token;
     }
+    @AfterEach
+    void clean() {
+        utils.clean();
+    }
+
 
     @Test
     public void getUsersTest() throws Exception {
@@ -61,26 +69,16 @@ public class UserControllerTest {
         assertThatJson(response.getContentAsString()).isArray();
         assertThat(response.getContentAsString()).contains("Semyon");
         assertThat(response.getContentAsString()).contains("Petr");
+
+        final List<User> userList = objectMapper.readValue(response.getContentAsString(), new TypeReference<>() { });
+        for (User user: userList) {
+            assertThat(userRepository.findAll().contains(user));
+        }
     }
 
     @Test
     public void getUserByIdTest() throws Exception {
         User user = userRepository.findUserByEmail("senya@mail.ru").orElseThrow();
-
-        assertThat(user).isNotNull();
-
-        LogInDto logInDto = new LogInDto("senya@mail.ru", "sem777");
-
-        MockHttpServletResponse login = mockMvc
-            .perform(post(baseUrl + "/api/login")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(logInDto)))
-            .andReturn()
-            .getResponse();
-
-        assertThat(login.getStatus()).isEqualTo(200);
-
-        String token = login.getContentAsString();
 
         Long id = user.getId();
 
@@ -91,6 +89,9 @@ public class UserControllerTest {
 
         assertThat(response.getStatus()).isEqualTo(200);
         assertThat(response.getContentAsString()).contains("senya@mail.ru");
+
+        final User readUser = objectMapper.readValue(response.getContentAsString(), new TypeReference<>() { });
+        assertThat(readUser.getFirstName()).isEqualTo(userRepository.findById(id).orElseThrow().getFirstName());
     }
 
     @Test
@@ -123,19 +124,6 @@ public class UserControllerTest {
         User user = userRepository.findUserByEmail("senya@mail.ru").orElseThrow();
         UserDto userDto = new UserDto(user.getEmail(), "Senya", user.getLastName(), "666777");
 
-        LogInDto logInDto = new LogInDto(user.getEmail(), "sem777");
-
-        MockHttpServletResponse login = mockMvc
-            .perform(post(baseUrl + "/api/login")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(logInDto)))
-            .andReturn()
-            .getResponse();
-
-        assertThat(login.getStatus()).isEqualTo(200);
-
-        String token = login.getContentAsString();
-
         MockHttpServletResponse response = mockMvc
             .perform(put(baseUrl + "/api/users/" + user.getId())
                 .header("Authorization", "Bearer " + token)
@@ -147,6 +135,21 @@ public class UserControllerTest {
 
         user = userRepository.findUserByEmail("senya@mail.ru").orElseThrow();
         assertThat(user.getFirstName()).isEqualTo("Senya");
+    }
+
+    @Test
+    public void loginUser() throws Exception {
+        User user = userRepository.findUserByEmail("senya@mail.ru").orElseThrow();
+        LogInDto logInDto = new LogInDto(user.getEmail(), "sem777");
+
+        MockHttpServletResponse login = mockMvc
+            .perform(post(baseUrl + "/api/login")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(logInDto)))
+            .andReturn()
+            .getResponse();
+
+        assertThat(login.getStatus()).isEqualTo(200);
     }
 
 }

@@ -1,10 +1,12 @@
 package hexlet.code.controller;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import hexlet.code.dto.TaskStatusDto;
 import hexlet.code.model.TaskStatus;
 import hexlet.code.repository.TaskStatusRepository;
 import hexlet.code.utils.TestUtils;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,9 +15,9 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.transaction.annotation.Transactional;
 
 
+import java.util.List;
 import java.util.Optional;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
@@ -28,34 +30,33 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest
 @AutoConfigureMockMvc
-@Transactional
 public class TaskStatusControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
     @Autowired
-    private TaskStatusRepository repository;
+    private TaskStatusRepository taskStatusRepository;
     @Autowired
-    ObjectMapper objectMapper;
-
+    private ObjectMapper objectMapper;
     @Autowired
-    TestUtils utils;
+    private TestUtils utils;
 
-//    private static final Logger LOGGER = LoggerFactory.getLogger(TaskStatusController.class);
-
-    private final String login = "http://localhost:8080/api/login";
     private final String base = "http://localhost:8080/api/statuses";
-    private final String users = "http://localhost:8080/api/users";
 
     private String token;
 
     @BeforeEach
-    void prepare() throws Exception {
+    void prepare() {
         utils.addUsers();
         utils.loginUser();
         token = utils.token;
         utils.addTaskStatus("NEW_STAT1");
         utils.addTaskStatus("NEW_STAT2");
+    }
+
+    @AfterEach
+    void clean() {
+        utils.clean();
     }
 
     @Test
@@ -68,13 +69,17 @@ public class TaskStatusControllerTest {
         assertThat(response.getStatus()).isEqualTo(200);
         assertThat(response.getContentAsString()).contains("NEW_STAT1");
         assertThat(response.getContentAsString()).contains("NEW_STAT2");
+
+        final List<TaskStatus> taskStatuses = objectMapper
+            .readValue(response.getContentAsString(), new TypeReference<>() { });
+        for (TaskStatus taskStatus: taskStatuses) {
+            assertThat(taskStatusRepository.findAll().contains(taskStatus));
+        }
     }
 
     @Test
     public void testGetStatus() throws Exception {
-        TaskStatus taskStatus = repository.findByName("NEW_STAT1").orElseThrow();
-
-        assertThat(taskStatus).isNotNull();
+        TaskStatus taskStatus = taskStatusRepository.findByName("NEW_STAT1").orElseThrow();
 
         MockHttpServletResponse response = mockMvc.perform(
                 get(base + "/" + taskStatus.getId())
@@ -83,6 +88,10 @@ public class TaskStatusControllerTest {
 
         assertThat(response.getStatus()).isEqualTo(200);
         assertThat(response.getContentAsString()).contains("NEW_STAT1");
+
+        final TaskStatus status = objectMapper.readValue(response.getContentAsString(), new TypeReference<>() { });
+        assertThat(status.getName())
+            .isEqualTo(taskStatusRepository.findById(taskStatus.getId()).orElseThrow().getName());
     }
 
     @Test
@@ -99,16 +108,15 @@ public class TaskStatusControllerTest {
 
         assertThat(response.getStatus()).isEqualTo(201);
         assertThat(response.getContentAsString()).contains(dto.getName());
+
+        assertThat(taskStatusRepository.findByName(dto.getName()).orElseThrow()).isNotNull();
     }
 
     @Test
     public void testUpdateStatus() throws Exception {
         TaskStatusDto dto = new TaskStatusDto("TEST_STAT");
 
-        TaskStatus taskStatus = repository.findByName("NEW_STAT1").orElseThrow();
-
-        assertThat(taskStatus).isNotNull();
-        assertThat(taskStatus.getName()).isEqualTo("NEW_STAT1");
+        TaskStatus taskStatus = taskStatusRepository.findByName("NEW_STAT1").orElseThrow();
 
         MockHttpServletResponse response = mockMvc.perform(
                 put(base + "/" + taskStatus.getId())
@@ -120,11 +128,14 @@ public class TaskStatusControllerTest {
 
         assertThat(response.getStatus()).isEqualTo(200);
         assertThat(response.getContentAsString()).contains(dto.getName());
+
+        assertThat(taskStatusRepository.findByName(taskStatus.getName())).isEmpty();
+        assertThat(taskStatusRepository.findByName(dto.getName())).isPresent();
     }
 
     @Test
     public void testDeleteStatus() throws Exception {
-        TaskStatus taskStatus = repository.findByName("NEW_STAT1").orElseThrow();
+        TaskStatus taskStatus = taskStatusRepository.findByName("NEW_STAT1").orElseThrow();
 
         assertThat(taskStatus).isNotNull();
         assertThat(taskStatus.getName()).isEqualTo("NEW_STAT1");
@@ -137,7 +148,7 @@ public class TaskStatusControllerTest {
 
         assertThat(response.getStatus()).isEqualTo(200);
 
-        Optional<TaskStatus> deletedTaskStatus = repository.findByName("NEW_STAT1");
+        Optional<TaskStatus> deletedTaskStatus = taskStatusRepository.findByName("NEW_STAT1");
 
         assertThat(deletedTaskStatus.isEmpty()).isTrue();
     }

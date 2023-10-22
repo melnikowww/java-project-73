@@ -9,6 +9,7 @@ import hexlet.code.dto.UserDto;
 import hexlet.code.model.TaskStatus;
 import hexlet.code.model.User;
 import hexlet.code.repository.LabelRepository;
+import hexlet.code.repository.TaskRepository;
 import hexlet.code.repository.TaskStatusRepository;
 import hexlet.code.repository.UserRepository;
 import hexlet.code.service.LabelService;
@@ -27,34 +28,34 @@ import java.util.List;
 public class TestUtils {
 
     @Autowired
-    UserRepository userRepository;
+    private UserRepository userRepository;
     @Autowired
-    TaskStatusRepository taskStatusRepository;
+    private TaskStatusRepository taskStatusRepository;
     @Autowired
-    LabelRepository labelRepository;
+    private LabelRepository labelRepository;
     @Autowired
-    UserService userService;
+    private TaskRepository taskRepository;
     @Autowired
-    LogInService logInService;
+    private UserService userService;
     @Autowired
-    TaskStatusService taskStatusService;
+    private LogInService logInService;
     @Autowired
-    TaskService taskService;
+    private TaskStatusService taskStatusService;
     @Autowired
-    LabelService labelService;
+    private TaskService taskService;
+    @Autowired
+    private LabelService labelService;
 
     public String token;
     public final String email = "senya@mail.ru";
     private final String password = "sem777";
 
-    public void setProfile() {
-
-    }
-
     public void addUser() {
         UserDto userDto = new UserDto("senya@mail.ru", "Semyon", "Semyonich", "sem777");
         userDto.setRole(UserRole.USER);
-        userService.createUser(userDto);
+        if (userRepository.findUserByEmail("senya@mail.ru").isEmpty()) {
+            userService.createUser(userDto);
+        }
     }
 
     public void addUsers() {
@@ -108,6 +109,13 @@ public class TestUtils {
             List.of(labelRepository.findByName("TEST_LABEL").orElseThrow().getId())
         );
         taskService.createTask(dto);
+    }
+
+    public void clean() {
+        taskRepository.deleteAll();
+        taskStatusRepository.deleteAll();
+        labelRepository.deleteAll();
+        userRepository.deleteAll();
     }
 
 }

@@ -13,5 +13,4 @@ public interface TaskService {
     Long findAuthorId(String token);
     boolean isAuthor(String token, Long id);
     List<Task> findWithFilter(Predicate predicate);
-    void deleteTask(Long id, String token);
 }
