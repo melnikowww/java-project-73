@@ -22,7 +22,7 @@ public class JwtUtils {
 
     private static final String JWT_SUBJECT = "user-details";
     private static final String JWT_ISSUER = "spring-app";
-    @Value("${jwt.secret}")
+    @Value("${jwt.secret:}")
     private String secretKey;
 
     public String extractUsername(String token) {

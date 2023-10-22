@@ -17,10 +17,10 @@ import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 })
 public class RollbarConfig {
 
-    @Value("${rollbar.token}")
+    @Value("${rollbar.token:}")
     private String rollbarToken;
 
-    @Value("${spring.profiles.active}")
+    @Value("${spring.profiles.active:}")
     private String activeProfile;
 
     @Bean
