@@ -3,6 +3,7 @@ package hexlet.code.config;
 import com.rollbar.notifier.Rollbar;
 import com.rollbar.notifier.config.Config;
 import com.rollbar.spring.webmvc.RollbarSpringConfigBuilder;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -15,17 +16,16 @@ import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 @ComponentScan({
     "hexlet.code"
 })
+@RequiredArgsConstructor
 public class RollbarConfig {
 
-    @Value("${rollbar.token:}")
+    @Value("${rollbar.token}")
     private String rollbarToken;
-
-    @Value("${spring.profiles.active:}")
+    @Value("${spring.profiles.active}")
     private String activeProfile;
 
     @Bean
     public Rollbar rollbar() {
-
         return new Rollbar(getRollbarConfigs(rollbarToken));
     }
 

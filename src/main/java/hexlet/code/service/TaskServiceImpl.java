@@ -31,8 +31,7 @@ public class TaskServiceImpl implements TaskService {
     TaskStatusRepository taskStatusRepository;
     @Autowired
     LabelRepository labelRepository;
-    @Autowired
-    JwtUtils jwtUtils;
+    private final JwtUtils jwtUtils;
 
     @Override
     public Task createTask(TaskDto dto) {

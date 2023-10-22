@@ -17,12 +17,13 @@ import java.util.Map;
 import java.util.function.Function;
 
 
+
 @Component
 public class JwtUtils {
 
     private static final String JWT_SUBJECT = "user-details";
     private static final String JWT_ISSUER = "spring-app";
-    @Value("${jwt.secret:}")
+    @Value(value = "${jwt.secret}")
     private String secretKey;
 
     public String extractUsername(String token) {
