@@ -22,7 +22,7 @@ import org.springframework.core.env.ConfigurableEnvironment;
 public class AppApplication {
 
     @Autowired
-    ConfigurableEnvironment conf;
+    private ConfigurableEnvironment conf;
 
     public static void main(String[] args) {
         SpringApplication application = new SpringApplication(AppApplication.class);

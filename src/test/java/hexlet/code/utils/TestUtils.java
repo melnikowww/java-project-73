@@ -46,7 +46,6 @@ public class TestUtils {
     @Autowired
     private LabelService labelService;
 
-    public String token;
     private final String email = "senya@mail.ru";
     private final String password = "sem777";
 
