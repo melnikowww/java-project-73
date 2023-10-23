@@ -2,10 +2,8 @@ package hexlet.code.service;
 
 import hexlet.code.dto.UserDto;
 import hexlet.code.model.User;
-import hexlet.code.repository.TaskRepository;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
@@ -13,13 +11,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 @Transactional
 @AllArgsConstructor
 public class UserServiceImpl implements UserService {
-
-    @Autowired
-    PasswordEncoder encoder;
-    @Autowired
-    hexlet.code.repository.UserRepository userRepository;
-    @Autowired
-    TaskRepository taskRepository;
+    private final PasswordEncoder encoder;
+    private final hexlet.code.repository.UserRepository userRepository;
 
     @Override
     public User createUser(UserDto userDto) {

@@ -36,19 +36,17 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 public class TaskControllerTest {
 
     @Autowired
-    ObjectMapper objectMapper;
+    private ObjectMapper objectMapper;
     @Autowired
-    MockMvc mockMvc;
+    private MockMvc mockMvc;
     @Autowired
-    UserRepository userRepository;
+    private UserRepository userRepository;
     @Autowired
-    TaskStatusRepository taskStatusRepository;
+    private TaskStatusRepository taskStatusRepository;
     @Autowired
-    LabelRepository labelRepository;
+    private TaskRepository taskRepository;
     @Autowired
-    TaskRepository taskRepository;
-    @Autowired
-    TestUtils utils;
+    private TestUtils utils;
 
     private String token;
     private final String base = "http://localhost:8080/api/tasks";
@@ -57,8 +55,7 @@ public class TaskControllerTest {
     @BeforeEach
     void prepare() {
         utils.addUsers();
-        utils.loginUser();
-        token = utils.token;
+        token = utils.loginUser();
         utils.addTaskStatus("NEW_STAT1");
         utils.addTask();
     }
@@ -86,7 +83,7 @@ public class TaskControllerTest {
 
     @Test
     public void getTasksWithParams() throws Exception {
-        User user = userRepository.findUserByEmail(utils.email).orElseThrow();
+        User user = userRepository.findUserByEmail("senya@mail.ru").orElseThrow();
 
         MockHttpServletResponse response = mockMvc
             .perform(

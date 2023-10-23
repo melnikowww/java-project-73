@@ -49,8 +49,7 @@ public class UserControllerTest {
     @BeforeEach
     void addUsers() {
         utils.addUsers();
-        utils.loginUser();
-        token = utils.token;
+        token = utils.loginUser();
     }
     @AfterEach
     void clean() {

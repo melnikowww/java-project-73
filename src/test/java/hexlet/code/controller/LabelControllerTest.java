@@ -46,8 +46,7 @@ public class LabelControllerTest {
     @BeforeEach
     public void prepare() {
         utils.addUser();
-        utils.loginUser();
-        token = utils.token;
+        token = utils.loginUser();
         utils.addTaskStatus("NEW_STAT1");
         utils.addTask();
         utils.addLabels("TEST_LABEL");

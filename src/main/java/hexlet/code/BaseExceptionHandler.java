@@ -30,7 +30,7 @@ import java.util.NoSuchElementException;
 public class BaseExceptionHandler {
 
     @Autowired
-    Rollbar rollbar;
+    private Rollbar rollbar;
 
     @ResponseStatus(UNAUTHORIZED)
     @ExceptionHandler(UsernameNotFoundException.class)

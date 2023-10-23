@@ -48,8 +48,7 @@ public class TaskStatusControllerTest {
     @BeforeEach
     void prepare() {
         utils.addUsers();
-        utils.loginUser();
-        token = utils.token;
+        token = utils.loginUser();
         utils.addTaskStatus("NEW_STAT1");
         utils.addTaskStatus("NEW_STAT2");
     }

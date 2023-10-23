@@ -28,26 +28,26 @@ import java.util.Set;
 public class TestUtils {
 
     @Autowired
-    UserRepository userRepository;
+    private UserRepository userRepository;
     @Autowired
-    TaskStatusRepository taskStatusRepository;
+    private TaskStatusRepository taskStatusRepository;
     @Autowired
-    LabelRepository labelRepository;
+    private LabelRepository labelRepository;
     @Autowired
-    TaskRepository taskRepository;
+    private TaskRepository taskRepository;
     @Autowired
-    UserService userService;
+    private UserService userService;
     @Autowired
-    LogInService logInService;
+    private LogInService logInService;
     @Autowired
-    TaskStatusService taskStatusService;
+    private TaskStatusService taskStatusService;
     @Autowired
-    TaskService taskService;
+    private TaskService taskService;
     @Autowired
-    LabelService labelService;
+    private LabelService labelService;
 
     public String token;
-    public final String email = "senya@mail.ru";
+    private final String email = "senya@mail.ru";
     private final String password = "sem777";
 
     public void addUser() {
@@ -68,9 +68,9 @@ public class TestUtils {
         userService.createUser(userDto1);
     }
 
-    public void loginUser() {
+    public String loginUser() {
         LogInDto logInDto = new LogInDto(email, password);
-        token = logInService.authenticate(logInDto);
+        return logInService.authenticate(logInDto);
     }
 
     public void addTaskStatus(String name) {
