@@ -5,6 +5,7 @@ import hexlet.code.config.security.JwtUtils;
 import hexlet.code.dto.TaskDto;
 import hexlet.code.model.Label;
 import hexlet.code.model.Task;
+import hexlet.code.model.TaskStatus;
 import hexlet.code.repository.LabelRepository;
 import hexlet.code.repository.TaskRepository;
 import hexlet.code.repository.TaskStatusRepository;
@@ -15,40 +16,38 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 
 @Service
 @Transactional
 @AllArgsConstructor
 public class TaskServiceImpl implements TaskService {
 
-    @Autowired
-    TaskRepository taskRepository;
-    @Autowired
-    UserRepository userRepository;
-    @Autowired
-    TaskStatusRepository taskStatusRepository;
-    @Autowired
-    LabelRepository labelRepository;
+    private final TaskRepository taskRepository;
+    private final UserRepository userRepository;
+    private final TaskStatusRepository taskStatusRepository;
+    private final LabelRepository labelRepository;
     private final JwtUtils jwtUtils;
 
     @Override
-    public Task createTask(TaskDto dto) {
+    public Task createTask(TaskDto dto, Long id) {
         List<Label> labels = new ArrayList<>();
-        if (dto.getLabelsId() != null) {
-            for (Long labelId : dto.getLabelsId()) {
+        if (dto.getLabelIds() != null) {
+            for (Long labelId : dto.getLabelIds()) {
                 labels.add(labelRepository.findById(labelId).orElseThrow());
             }
         }
-        Task task = new Task(
-            dto.getName(),
-            dto.getDescription(),
-            taskStatusRepository.findById(dto.getTaskStatusId()).orElseThrow(),
-            userRepository.findById(dto.getAuthorId()).orElseThrow(),
-            userRepository.findById(dto.getExecutorId()).orElseThrow(),
-            labels
-        );
+        Task task = new Task();
+        task.setName(dto.getName());
+        task.setDescription(dto.getDescription());
+        task.setTaskStatus(taskStatusRepository.findById(dto.getTaskStatusId()).orElseThrow());
+        task.setAuthor(userRepository.findById(id).orElseThrow());
+        task.setExecutor(userRepository.findById(dto.getExecutorId()).orElseThrow());
+        task.setLabels(labels);
+
         return taskRepository.save(task);
     }
 
@@ -56,8 +55,8 @@ public class TaskServiceImpl implements TaskService {
     public Task updateTask(TaskDto dto, Long id) {
         Task realTask = taskRepository.findById(id).orElseThrow();
         List<Label> labels = new ArrayList<>();
-        if (dto.getLabelsId() != null) {
-            for (Long labelId : dto.getLabelsId()) {
+        if (dto.getLabelIds() != null) {
+            for (Long labelId : dto.getLabelIds()) {
                 labels.add(labelRepository.findById(labelId).orElseThrow());
             }
         }
@@ -71,7 +70,9 @@ public class TaskServiceImpl implements TaskService {
 
     @Override
     public Long findAuthorId(String token) {
-        return userRepository.findUserByEmail(jwtUtils.extractUsername(token.substring(7)))
+        return userRepository.findUserByEmail(
+            jwtUtils.extractUsername(token.substring(7))
+            )
             .orElseThrow()
             .getId();
     }

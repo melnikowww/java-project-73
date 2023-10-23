@@ -8,7 +8,7 @@ import java.util.List;
 
 public interface TaskService {
 
-    Task createTask(TaskDto dto);
+    Task createTask(TaskDto dto, Long authorId);
     Task updateTask(TaskDto dto, Long id);
     Long findAuthorId(String token);
     boolean isAuthor(String token, Long id);

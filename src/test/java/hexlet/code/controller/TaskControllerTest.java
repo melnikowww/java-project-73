@@ -13,6 +13,7 @@ import hexlet.code.repository.UserRepository;
 import hexlet.code.utils.TestUtils;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -20,9 +21,11 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.transaction.annotation.Transactional;
 
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -37,19 +40,19 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 public class TaskControllerTest {
 
     @Autowired
-    private ObjectMapper objectMapper;
+    ObjectMapper objectMapper;
     @Autowired
-    private MockMvc mockMvc;
+    MockMvc mockMvc;
     @Autowired
-    private UserRepository userRepository;
+    UserRepository userRepository;
     @Autowired
-    private TaskStatusRepository taskStatusRepository;
+    TaskStatusRepository taskStatusRepository;
     @Autowired
-    private LabelRepository labelRepository;
+    LabelRepository labelRepository;
     @Autowired
-    private TaskRepository taskRepository;
+    TaskRepository taskRepository;
     @Autowired
-    private TestUtils utils;
+    TestUtils utils;
 
     private String token;
     private final String base = "http://localhost:8080/api/tasks";
@@ -125,10 +128,9 @@ public class TaskControllerTest {
         TaskDto taskDto = new TaskDto(
             "NEW_TASK",
             "NEW_DESC",
+            user.getId(),
             taskStatus.getId(),
-            user.getId(),
-            user.getId(),
-            new ArrayList<>()
+            new HashSet<>()
         );
 
         MockHttpServletResponse response = mockMvc
@@ -154,11 +156,11 @@ public class TaskControllerTest {
             "NEW_DESC",
             taskStatus.getId(),
             user.getId(),
-            user.getId(),
-            new ArrayList<>()
+            new HashSet<>()
         );
 
         Task oldTask = taskRepository.findByName("TEST_TASK").orElseThrow();
+
         MockHttpServletResponse response = mockMvc
             .perform(
                 put(base + "/" + oldTask.getId())

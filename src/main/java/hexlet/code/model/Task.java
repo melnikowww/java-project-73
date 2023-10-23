@@ -10,9 +10,13 @@ import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import lombok.ToString;
 import org.hibernate.annotations.CreationTimestamp;
 
@@ -20,49 +24,43 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 
-@Data
+import static jakarta.persistence.GenerationType.IDENTITY;
+
 @Entity
-@AllArgsConstructor
-@NoArgsConstructor
 @Table(name = "tasks")
-@ToString
+@NoArgsConstructor
+@AllArgsConstructor
+@Getter
+@Setter
 public class Task {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = IDENTITY)
     private Long id;
+
+    @NotNull
+    @ManyToOne
+    private User author;
+
+    @ManyToOne
+    private User executor;
+
+    @NotNull
+    @ManyToOne
+    private TaskStatus taskStatus;
+
+    @ManyToMany
+    private List<Label> labels;
+
+    @NotBlank
     private String name;
 
     private String description;
 
-    @ManyToOne(fetch = FetchType.EAGER)
-    private TaskStatus taskStatus;
-
-    @ManyToOne(fetch = FetchType.EAGER)
-    private User author;
-
-    @ManyToOne(fetch = FetchType.EAGER)
-    private User executor;
-
     @CreationTimestamp
     private Instant createdAt;
 
-    @ManyToMany(fetch = FetchType.EAGER, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
-    @JoinTable(name = "tasks_labels")
-    List<Label> labels = new ArrayList<>();
-
-    public Task(
-        String name,
-        String description,
-        TaskStatus status,
-        User author,
-        User executor,
-        List<Label> labels) {
-        this.name = name;
-        this.description = description;
-        this.taskStatus = status;
-        this.author = author;
-        this.executor = executor;
-        this.labels = labels;
+    public Task(final Long id) {
+        this.id = id;
     }
 }

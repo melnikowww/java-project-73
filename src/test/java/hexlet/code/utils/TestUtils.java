@@ -21,30 +21,32 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 
 @Component
 public class TestUtils {
 
     @Autowired
-    private UserRepository userRepository;
+    UserRepository userRepository;
     @Autowired
-    private TaskStatusRepository taskStatusRepository;
+    TaskStatusRepository taskStatusRepository;
     @Autowired
-    private LabelRepository labelRepository;
+    LabelRepository labelRepository;
     @Autowired
-    private TaskRepository taskRepository;
+    TaskRepository taskRepository;
     @Autowired
-    private UserService userService;
+    UserService userService;
     @Autowired
-    private LogInService logInService;
+    LogInService logInService;
     @Autowired
-    private TaskStatusService taskStatusService;
+    TaskStatusService taskStatusService;
     @Autowired
-    private TaskService taskService;
+    TaskService taskService;
     @Autowired
-    private LabelService labelService;
+    LabelService labelService;
 
     public String token;
     public final String email = "senya@mail.ru";
@@ -84,12 +86,11 @@ public class TestUtils {
         TaskDto dto = new TaskDto(
             "TEST_TASK",
             "TEST_DESC",
+            user.getId(),
             status.getId(),
-            user.getId(),
-            user.getId(),
-            new ArrayList<>()
+            new HashSet<>()
         );
-        taskService.createTask(dto);
+        taskService.createTask(dto, userRepository.findUserByEmail("senya@mail.ru").orElseThrow().getId());
     }
 
     public void addLabels(String name) {
@@ -105,10 +106,9 @@ public class TestUtils {
             "TEST_DESC",
             status.getId(),
             user.getId(),
-            user.getId(),
-            List.of(labelRepository.findByName("TEST_LABEL").orElseThrow().getId())
+            Set.of(labelRepository.findByName("TEST_LABEL").orElseThrow().getId())
         );
-        taskService.createTask(dto);
+        taskService.createTask(dto, userRepository.findUserByEmail("senya@mail.ru").orElseThrow().getId());
     }
 
     public void clean() {

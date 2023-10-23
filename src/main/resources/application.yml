@@ -5,7 +5,7 @@ base-url: /api
 
 spring:
   profiles:
-    active: ${PROFILE:dev}
+    active: ${PROFILE:development}
 
 jwt:
   secret: YzNlNjVkZTQ3YjEyNWY5MWVmNWE2MjQyMzRiYmE4NTRmNGY0N2EzMDc3ZTIwYTUxNjM3ZGI0YTgyZWYyNjA0Mg==

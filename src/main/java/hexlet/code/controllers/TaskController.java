@@ -79,8 +79,8 @@ public class TaskController {
     public Task createTask(
         @Valid @RequestBody TaskDto dto,
         @RequestHeader(name = HttpHeaders.AUTHORIZATION) String token) {
-        dto.setAuthorId(taskService.findAuthorId(token));
-        return taskService.createTask(dto);
+        Long authorId = taskService.findAuthorId(token);
+        return taskService.createTask(dto, authorId);
     }
 
     @Operation(summary = "Update task")
