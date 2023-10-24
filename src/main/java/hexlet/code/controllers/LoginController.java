@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @Validated
 @AllArgsConstructor
-@RequestMapping("${base.url}")
+@RequestMapping("${base.url}" + "/login")
 public class LoginController {
 
     private final LogInService logInService;
@@ -26,7 +26,7 @@ public class LoginController {
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "Log in user")
     })
-    @PostMapping("/login")
+    @PostMapping("")
     public String authUser(@Valid @RequestBody LogInDto logInDto) {
         return logInService.authenticate(logInDto);
     }

@@ -1,6 +1,7 @@
 package hexlet.code.config.security;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -24,6 +25,8 @@ public class WebSecurityConfig {
 
     private final JwtAuthFilter jwtAuthFilter;
     private final UserDetailsService userDetailsService;
+    @Value(value = "${base.url}")
+    private String baseUrl;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
@@ -31,14 +34,15 @@ public class WebSecurityConfig {
 
         httpSecurity
             .authorizeHttpRequests()
-            .requestMatchers(HttpMethod.GET, "/api/users").permitAll()
-            .requestMatchers(HttpMethod.POST, "/api/users").permitAll()
-            .requestMatchers(HttpMethod.POST, "/api/login").permitAll()
+            .requestMatchers(HttpMethod.GET, "/users", baseUrl + "/users").permitAll()
+            .requestMatchers(HttpMethod.POST, baseUrl + "/users", "/users").permitAll()
+            .requestMatchers(HttpMethod.POST, baseUrl + "/login", "/login").permitAll()
+            .requestMatchers(HttpMethod.GET, baseUrl + "/statuses/**", "/statuses/**").permitAll()
+            .requestMatchers(HttpMethod.GET, baseUrl + "/tasks/**", "/tasks/**").permitAll()
             .requestMatchers(HttpMethod.GET, "/welcome", "/").permitAll()
-            .requestMatchers(HttpMethod.GET, "/api/statuses/**").permitAll()
-            .requestMatchers(HttpMethod.GET, "/api/tasks/**").permitAll()
             .requestMatchers(HttpMethod.GET, "/api-docs").permitAll()
             .requestMatchers(HttpMethod.GET, "/swagger-ui/**").permitAll()
+            .requestMatchers(HttpMethod.GET, "/static/**").permitAll()
             .anyRequest().authenticated()
             .and()
             .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)

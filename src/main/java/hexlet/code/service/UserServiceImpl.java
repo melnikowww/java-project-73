@@ -4,6 +4,7 @@ import hexlet.code.dto.UserDto;
 import hexlet.code.model.User;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
@@ -39,5 +40,12 @@ public class UserServiceImpl implements UserService {
     @Override
     public void deleteUser(Long id) {
         userRepository.deleteById(id);
+    }
+
+    @Override
+    public User getCurrentUser() {
+        return userRepository
+            .findUserByEmail(SecurityContextHolder.getContext().getAuthentication().getName())
+            .orElseThrow();
     }
 }

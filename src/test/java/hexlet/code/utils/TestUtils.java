@@ -1,11 +1,12 @@
 package hexlet.code.utils;
 
-import hexlet.code.UserRole;
+import hexlet.code.config.security.UserRole;
 import hexlet.code.dto.LabelDto;
 import hexlet.code.dto.LogInDto;
 import hexlet.code.dto.TaskDto;
 import hexlet.code.dto.TaskStatusDto;
 import hexlet.code.dto.UserDto;
+import hexlet.code.model.Task;
 import hexlet.code.model.TaskStatus;
 import hexlet.code.model.User;
 import hexlet.code.repository.LabelRepository;
@@ -20,7 +21,8 @@ import hexlet.code.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.util.HashSet;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
 
@@ -80,14 +82,14 @@ public class TestUtils {
     public void addTask() {
         User user = userRepository.findUserByEmail(email).orElseThrow();
         TaskStatus status = taskStatusRepository.findByName("NEW_STAT1").orElseThrow();
-        TaskDto dto = new TaskDto(
-            "TEST_TASK",
-            "TEST_DESC",
-            user.getId(),
-            status.getId(),
-            new HashSet<>()
-        );
-        taskService.createTask(dto, userRepository.findUserByEmail("senya@mail.ru").orElseThrow().getId());
+        taskRepository.save(Task.builder()
+                .name("TEST_TASK")
+                .description("TEST_DESC")
+                .author(user)
+                .executor(user)
+                .taskStatus(status)
+                .labels(new ArrayList<>())
+            .build());
     }
 
     public void addLabels(String name) {
@@ -105,7 +107,14 @@ public class TestUtils {
             user.getId(),
             Set.of(labelRepository.findByName("TEST_LABEL").orElseThrow().getId())
         );
-        taskService.createTask(dto, userRepository.findUserByEmail("senya@mail.ru").orElseThrow().getId());
+        taskRepository.save(Task.builder()
+            .name("TEST_TASK")
+            .description("TEST_DESC")
+            .author(user)
+            .executor(user)
+            .taskStatus(status)
+            .labels(List.of(labelRepository.findByName("TEST_LABEL").orElseThrow()))
+            .build());
     }
 
     public void clean() {

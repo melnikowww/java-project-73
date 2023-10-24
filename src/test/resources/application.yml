@@ -8,9 +8,12 @@ spring:
     active: ${PROFILE:test}
   jpa:
     show-sql: 'true'
+
 base:
-  url: /api
+  url: ${BASE_URL:}
+
 rollbar:
   token: ''
+
 jwt:
   secret: YzNlNjVkZTQ3YjEyNWY5MWVmNWE2MjQyMzRiYmE4NTRmNGY0N2EzMDc3ZTIwYTUxNjM3ZGI0YTgyZWYyNjA0Mg==

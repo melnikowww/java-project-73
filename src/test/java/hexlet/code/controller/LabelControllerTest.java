@@ -10,6 +10,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
@@ -40,8 +41,9 @@ public class LabelControllerTest {
     @Autowired
     private TestUtils utils;
     private String token;
-
-    private final String base = "http://localhost:8080/api/labels";
+    @Value(value = "${base.url}")
+    private String prefix;
+    private final String base = "http://localhost:8080";
 
     @BeforeEach
     public void prepare() {
@@ -62,7 +64,7 @@ public class LabelControllerTest {
     public void getLabelsTest() throws Exception {
         MockHttpServletResponse response = mockMvc
             .perform(
-                get(base)
+                get(base + prefix + "/labels")
                     .header("Authorization", "Bearer " + token)
             )
             .andReturn().getResponse();
@@ -72,9 +74,7 @@ public class LabelControllerTest {
         assertThat(response.getContentAsString()).contains("TEST_LABEL_1");
 
         final List<Label> labelList = objectMapper.readValue(response.getContentAsString(), new TypeReference<>() { });
-        for (Label label: labelList) {
-            assertThat(labelRepository.findAll().contains(label));
-        }
+        assertThat(labelRepository.findAll()).containsAll(labelList);
     }
 
     @Test
@@ -83,7 +83,7 @@ public class LabelControllerTest {
 
         MockHttpServletResponse response = mockMvc
             .perform(
-                get(base + "/" + labelId)
+                get(base + prefix + "/labels" + "/" + labelId)
                     .header("Authorization", "Bearer " + token)
             )
             .andReturn().getResponse();
@@ -102,7 +102,7 @@ public class LabelControllerTest {
 
         MockHttpServletResponse response = mockMvc
             .perform(
-                post(base)
+                post(base + prefix + "/labels")
                     .header("Authorization", "Bearer " + token)
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(objectMapper.writeValueAsString(dto))
@@ -121,7 +121,7 @@ public class LabelControllerTest {
 
         MockHttpServletResponse response = mockMvc
             .perform(
-                put(base + "/" + idToUpd)
+                put(base + prefix + "/labels" + "/" + idToUpd)
                     .header("Authorization", "Bearer " + token)
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(objectMapper.writeValueAsString(dto))
@@ -140,7 +140,7 @@ public class LabelControllerTest {
 
         MockHttpServletResponse response = mockMvc
             .perform(
-                delete(base + "/" + id)
+                delete(base + prefix + "/labels" + "/" + id)
                     .header("Authorization", "Bearer " + token)
             )
             .andReturn().getResponse();
@@ -157,7 +157,7 @@ public class LabelControllerTest {
 
         MockHttpServletResponse response = mockMvc
             .perform(
-                delete(base + "/" + id)
+                delete(base + prefix + "/labels" + "/" + id)
                     .header("Authorization", "Bearer " + token)
             )
             .andReturn().getResponse();

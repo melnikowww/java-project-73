@@ -27,7 +27,7 @@ import java.util.List;
 @RestController
 @Validated
 @AllArgsConstructor
-@RequestMapping("${base.url}")
+@RequestMapping("${base.url}" + "/labels")
 public class LabelController {
 
     private final LabelRepository labelRepository;
@@ -38,7 +38,7 @@ public class LabelController {
         @ApiResponse(responseCode = "200", description = "List of labels")
     })
     @GetMapping(
-        path = "/labels",
+        path = "",
         produces = "application/json"
     )
     public List<Label> getLabels() {
@@ -50,7 +50,7 @@ public class LabelController {
         @ApiResponse(responseCode = "200", description = "Get specific label by id")
     })
     @GetMapping(
-        path = "/labels/{id}",
+        path = "/{id}",
         produces = "application/json"
     )
     public Label getLabel(@PathVariable Long id) {
@@ -63,7 +63,7 @@ public class LabelController {
         @ApiResponse(responseCode = "422", description = "Data is not valid")
     })
     @PostMapping(
-        path = "/labels",
+        path = "",
         produces = "application/json"
     )
     @ResponseStatus(HttpStatus.CREATED)
@@ -78,7 +78,7 @@ public class LabelController {
         @ApiResponse(responseCode = "422", description = "Data is not valid")
     })
     @PutMapping(
-        path = "/labels/{id}",
+        path = "/{id}",
         produces = "application/json"
     )
     public Label updateLabel(
@@ -92,7 +92,7 @@ public class LabelController {
         @ApiResponse(responseCode = "200", description = "Delete label by id")
     })
     @DeleteMapping(
-        path = "/labels/{id}"
+        path = "/{id}"
     )
     public void deleteLabel(@PathVariable Long id) {
         labelRepository.deleteById(id);

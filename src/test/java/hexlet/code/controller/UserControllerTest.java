@@ -14,6 +14,7 @@ import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
@@ -41,7 +42,10 @@ public class UserControllerTest {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(UserController.class);
 
-    private String baseUrl = "http://localhost:8080";
+    @Value(value = "${base.url}")
+    private String prefix;
+
+    private final String baseUrl = "http://localhost:8080";
     private String token;
     @Autowired
     private TestUtils utils;
@@ -60,7 +64,7 @@ public class UserControllerTest {
     @Test
     public void getUsersTest() throws Exception {
         MockHttpServletResponse response = mockMvc
-            .perform(get(baseUrl + "/api/users"))
+            .perform(get(baseUrl + prefix + "/users"))
             .andReturn()
             .getResponse();
 
@@ -70,8 +74,9 @@ public class UserControllerTest {
         assertThat(response.getContentAsString()).contains("Petr");
 
         final List<User> userList = objectMapper.readValue(response.getContentAsString(), new TypeReference<>() { });
+        assertThat(userRepository.findAll().size()).isEqualTo(userList.size());
         for (User user: userList) {
-            assertThat(userRepository.findAll().contains(user));
+            assertThat(userRepository.findAll().toString()).contains(user.getEmail());
         }
     }
 
@@ -82,7 +87,7 @@ public class UserControllerTest {
         Long id = user.getId();
 
         MockHttpServletResponse response = mockMvc
-            .perform(get(baseUrl + "/api/users/" + id)
+            .perform(get(baseUrl + prefix + "/users/" + id)
                 .header("Authorization", "Bearer " + token))
             .andReturn().getResponse();
 
@@ -104,7 +109,7 @@ public class UserControllerTest {
         String content = objectMapper.writeValueAsString(userDto);
 
         MockHttpServletResponse response = mockMvc
-            .perform(post(baseUrl + "/api/users")
+            .perform(post(baseUrl + prefix  + "/users")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(content))
             .andReturn()
@@ -124,7 +129,7 @@ public class UserControllerTest {
         UserDto userDto = new UserDto(user.getEmail(), "Senya", user.getLastName(), "666777");
 
         MockHttpServletResponse response = mockMvc
-            .perform(put(baseUrl + "/api/users/" + user.getId())
+            .perform(put(baseUrl + prefix  + "/users/" + user.getId())
                 .header("Authorization", "Bearer " + token)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(userDto)))
@@ -142,7 +147,7 @@ public class UserControllerTest {
         LogInDto logInDto = new LogInDto(user.getEmail(), "sem777");
 
         MockHttpServletResponse login = mockMvc
-            .perform(post(baseUrl + "/api/login")
+            .perform(post(baseUrl + prefix  + "/login")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(logInDto)))
             .andReturn()

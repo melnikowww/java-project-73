@@ -14,11 +14,13 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashSet;
 import java.util.List;
@@ -48,7 +50,9 @@ public class TaskControllerTest {
     private TestUtils utils;
 
     private String token;
-    private final String base = "http://localhost:8080/api/tasks";
+    @Value(value = "${base.url}")
+    private String prefix;
+    private final String base = "http://localhost:8080";
 
 
     @BeforeEach
@@ -65,28 +69,28 @@ public class TaskControllerTest {
     }
 
     @Test
-    public void getTasks() throws Exception {
+    public void getTasksTest() throws Exception {
         MockHttpServletResponse response = mockMvc
             .perform(
-                get(base)
+                get(base + prefix + "/tasks")
                     .header("Authorization", "Bearer " + token)
             )
             .andReturn().getResponse();
 
         assertThat(response.getStatus()).isEqualTo(200);
-        final List<Task> taskList = objectMapper.readValue(response.getContentAsString(), new TypeReference<>() { });
-        for (Task task: taskList) {
-            assertThat(taskRepository.findAll().contains(task));
+        final List<Task> expected = taskRepository.findAll();
+        for (Task task: expected) {
+            assertThat(response.getContentAsString().contains(task.getName())).isTrue();
         }
     }
 
     @Test
-    public void getTasksWithParams() throws Exception {
+    public void getTasksWithParamsTest() throws Exception {
         User user = userRepository.findUserByEmail("senya@mail.ru").orElseThrow();
 
         MockHttpServletResponse response = mockMvc
             .perform(
-                get(base + "?authorId=" + user.getId())
+                get(base + prefix + "/tasks" + "?authorId=" + user.getId())
                     .header("Authorization", "Bearer " + token)
             )
             .andReturn().getResponse();
@@ -96,12 +100,12 @@ public class TaskControllerTest {
     }
 
     @Test
-    public void getTask() throws Exception {
+    public void getTaskTest() throws Exception {
         Task task = taskRepository.findByName("TEST_TASK").orElseThrow();
 
         MockHttpServletResponse response = mockMvc
             .perform(
-                get(base + "/" + task.getId())
+                get(base + prefix + "/tasks" + "/" + task.getId())
                     .header("Authorization", "Bearer " + token)
             )
             .andReturn().getResponse();
@@ -113,7 +117,8 @@ public class TaskControllerTest {
     }
 
     @Test
-    public void createTask() throws Exception {
+    @Transactional
+    public void createTaskTest() throws Exception {
         User user = userRepository.findUserByEmail("senya@mail.ru").orElseThrow();
         TaskStatus taskStatus = taskStatusRepository.findByName("NEW_STAT1").orElseThrow();
 
@@ -127,7 +132,7 @@ public class TaskControllerTest {
 
         MockHttpServletResponse response = mockMvc
             .perform(
-                post(base)
+                post(base + prefix + "/tasks")
                     .header("Authorization", "Bearer " + token)
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(objectMapper.writeValueAsString(taskDto))
@@ -140,14 +145,15 @@ public class TaskControllerTest {
     }
 
     @Test
-    public void updateTask() throws Exception {
+    @Transactional
+    public void updateTaskTest() throws Exception {
         User user = userRepository.findUserByEmail("senya@mail.ru").orElseThrow();
         TaskStatus taskStatus = taskStatusRepository.findByName("NEW_STAT1").orElseThrow();
         TaskDto taskDto = new TaskDto(
             "NEW_TASK",
             "NEW_DESC",
-            taskStatus.getId(),
             user.getId(),
+            taskStatus.getId(),
             new HashSet<>()
         );
 
@@ -155,7 +161,7 @@ public class TaskControllerTest {
 
         MockHttpServletResponse response = mockMvc
             .perform(
-                put(base + "/" + oldTask.getId())
+                put(base + prefix + "/tasks" + "/" + oldTask.getId())
                     .header("Authorization", "Bearer " + token)
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(objectMapper.writeValueAsString(taskDto))
@@ -169,11 +175,12 @@ public class TaskControllerTest {
     }
 
     @Test
-    public void deleteTask() throws Exception {
+    @Transactional
+    public void deleteTaskTest() throws Exception {
         Task task = taskRepository.findByName("TEST_TASK").orElseThrow();
 
         MockHttpServletResponse response = mockMvc.perform(
-            delete(base + "/" + task.getId())
+            delete(base + prefix + "/tasks" + "/" + task.getId())
                 .header("Authorization", "Bearer " + token)
         )
             .andReturn().getResponse();

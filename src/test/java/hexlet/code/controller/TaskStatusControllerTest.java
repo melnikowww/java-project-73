@@ -10,6 +10,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
@@ -40,8 +41,9 @@ public class TaskStatusControllerTest {
     private ObjectMapper objectMapper;
     @Autowired
     private TestUtils utils;
-
-    private final String base = "http://localhost:8080/api/statuses";
+    @Value(value = "${base.url}")
+    private String prefix;
+    private final String base = "http://localhost:8080";
 
     private String token;
 
@@ -61,7 +63,7 @@ public class TaskStatusControllerTest {
     @Test
     public void testGetStatuses() throws Exception {
         MockHttpServletResponse response = mockMvc.perform(
-            get(base)
+            get(base + prefix + "/statuses")
         )
             .andReturn().getResponse();
 
@@ -71,9 +73,7 @@ public class TaskStatusControllerTest {
 
         final List<TaskStatus> taskStatuses = objectMapper
             .readValue(response.getContentAsString(), new TypeReference<>() { });
-        for (TaskStatus taskStatus: taskStatuses) {
-            assertThat(taskStatusRepository.findAll().contains(taskStatus));
-        }
+        assertThat(taskStatusRepository.findAll()).containsAll(taskStatuses);
     }
 
     @Test
@@ -81,7 +81,7 @@ public class TaskStatusControllerTest {
         TaskStatus taskStatus = taskStatusRepository.findByName("NEW_STAT1").orElseThrow();
 
         MockHttpServletResponse response = mockMvc.perform(
-                get(base + "/" + taskStatus.getId())
+                get(base + prefix + "/statuses" + "/" + taskStatus.getId())
             )
             .andReturn().getResponse();
 
@@ -98,7 +98,7 @@ public class TaskStatusControllerTest {
         TaskStatusDto dto = new TaskStatusDto("TEST_STAT");
 
         MockHttpServletResponse response = mockMvc.perform(
-                post(base)
+                post(base + prefix + "/statuses")
                     .header("Authorization", "Bearer " + token)
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(objectMapper.writeValueAsString(dto))
@@ -118,7 +118,7 @@ public class TaskStatusControllerTest {
         TaskStatus taskStatus = taskStatusRepository.findByName("NEW_STAT1").orElseThrow();
 
         MockHttpServletResponse response = mockMvc.perform(
-                put(base + "/" + taskStatus.getId())
+                put(base + prefix + "/statuses" + "/" + taskStatus.getId())
                     .header("Authorization", "Bearer " + token)
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(objectMapper.writeValueAsString(dto))
@@ -140,7 +140,7 @@ public class TaskStatusControllerTest {
         assertThat(taskStatus.getName()).isEqualTo("NEW_STAT1");
 
         MockHttpServletResponse response = mockMvc.perform(
-                delete(base + "/" + taskStatus.getId())
+                delete(base + prefix + "/statuses" + "/" + taskStatus.getId())
                     .header("Authorization", "Bearer " + token)
             )
             .andReturn().getResponse();

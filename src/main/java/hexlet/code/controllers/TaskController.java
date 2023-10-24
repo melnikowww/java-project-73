@@ -3,6 +3,7 @@ package hexlet.code.controllers;
 import hexlet.code.dto.TaskDto;
 import hexlet.code.model.Task;
 import hexlet.code.repository.TaskRepository;
+import hexlet.code.repository.UserRepository;
 import hexlet.code.service.TaskService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -11,7 +12,6 @@ import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 
 import org.springframework.data.querydsl.binding.QuerydslPredicate;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
@@ -21,7 +21,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import com.querydsl.core.types.Predicate;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -32,12 +31,12 @@ import java.util.List;
 @Validated
 @RestController
 @AllArgsConstructor
-@RequestMapping(path = "${base.url}")
+@RequestMapping(path = "${base.url}" + "/tasks")
 public class TaskController {
 
     private final TaskRepository taskRepository;
     private final TaskService taskService;
-
+    private final UserRepository userRepository;
     private static final String ONLY_OWNER_BY_ID = """
             @taskRepository.findById(#id).get().getAuthor().getEmail() == authentication.getName()
         """;
@@ -47,7 +46,7 @@ public class TaskController {
         @ApiResponse(responseCode = "200", description = "List of tasks")
     })
     @GetMapping(
-        path = "/tasks",
+        path = "",
         produces = "application/json"
     )
     public List<Task> getTasks(@QuerydslPredicate(root = Task.class) Predicate predicate) {
@@ -59,7 +58,7 @@ public class TaskController {
         @ApiResponse(responseCode = "200", description = "Get specific task by id")
     })
     @GetMapping(
-        path = "/tasks/{id}",
+        path = "/{id}",
         produces = "application/json"
     )
     public Task getTask(@PathVariable Long id) {
@@ -72,15 +71,13 @@ public class TaskController {
         @ApiResponse(responseCode = "422", description = "Data is not valid")
     })
     @PostMapping(
-        path = "/tasks",
+        path = "",
         produces = "application/json"
     )
     @ResponseStatus(HttpStatus.CREATED)
     public Task createTask(
-        @Valid @RequestBody TaskDto dto,
-        @RequestHeader(name = HttpHeaders.AUTHORIZATION) String token) {
-        Long authorId = taskService.findAuthorId(token);
-        return taskService.createTask(dto, authorId);
+        @Valid @RequestBody TaskDto dto) {
+        return taskService.createTask(dto);
     }
 
     @Operation(summary = "Update task")
@@ -89,7 +86,7 @@ public class TaskController {
         @ApiResponse(responseCode = "422", description = "Data is not valid")
     })
     @PutMapping(
-        path = "/tasks/{id}",
+        path = "/{id}",
         produces = "application/json"
     )
     public Task updateTask(
@@ -104,7 +101,7 @@ public class TaskController {
     })
     @PreAuthorize(ONLY_OWNER_BY_ID)
     @DeleteMapping(
-        path = "/tasks/{id}"
+        path = "/{id}"
     )
     public void deleteTask(
         @PathVariable Long id) {

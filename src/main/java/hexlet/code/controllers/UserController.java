@@ -1,6 +1,6 @@
 package hexlet.code.controllers;
 
-import hexlet.code.UserRole;
+import hexlet.code.config.security.UserRole;
 import hexlet.code.dto.UserDto;
 import hexlet.code.model.User;
 import hexlet.code.repository.UserRepository;
@@ -29,7 +29,7 @@ import java.util.List;
 
 @Validated
 @RestController()
-@RequestMapping("${base.url}")
+@RequestMapping("${base.url}" + "/users")
 @AllArgsConstructor
 @EnableMethodSecurity(prePostEnabled = true)
 public class UserController {
@@ -45,7 +45,7 @@ public class UserController {
         @ApiResponse(responseCode = "200", description = "Get specific user by id")
     })
     @GetMapping(
-        path = "/users/{id}",
+        path = "/{id}",
         produces = "application/json")
     public User getUser(@PathVariable Long id) {
         return userRepository.findById(id).orElseThrow();
@@ -56,7 +56,7 @@ public class UserController {
         @ApiResponse(responseCode = "200", description = "List of all users")
     })
     @GetMapping(
-        path = "/users",
+        path = "",
         produces = "application/json")
     public List<User> getUsers() {
         return userRepository.findAll();
@@ -68,7 +68,7 @@ public class UserController {
         @ApiResponse(responseCode = "422", description = "Data is not valid")
     })
     @ResponseStatus(HttpStatus.CREATED)
-    @PostMapping(path = "/users")
+    @PostMapping(path = "")
     public User createUser(@Valid @RequestBody UserDto userDto) {
         if (userDto.getRole() == null) {
             userDto.setRole(UserRole.USER);
@@ -82,7 +82,7 @@ public class UserController {
         @ApiResponse(responseCode = "422", description = "Data is not valid")
     })
     @PreAuthorize(ONLY_OWNER_BY_ID)
-    @PutMapping(path = "/users/{id}")
+    @PutMapping(path = "/{id}")
     public User updateUser(@PathVariable Long id, @Valid @RequestBody UserDto userDto) {
         return userService.updateUser(userDto, id);
     }
@@ -92,7 +92,7 @@ public class UserController {
         @ApiResponse(responseCode = "200", description = "Delete user by id")
     })
     @PreAuthorize(ONLY_OWNER_BY_ID)
-    @DeleteMapping(path = "/users/{id}")
+    @DeleteMapping(path = "/{id}")
     public void deleteUser(@PathVariable Long id) {
         userService.deleteUser(id);
     }

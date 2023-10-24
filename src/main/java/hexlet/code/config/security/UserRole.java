@@ -1,6 +1,5 @@
-package hexlet.code;
+package hexlet.code.config.security;
 
-import hexlet.code.config.security.Permission;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;

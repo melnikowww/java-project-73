@@ -1,6 +1,6 @@
 package hexlet.code.dto;
 
-import hexlet.code.UserRole;
+import hexlet.code.config.security.UserRole;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;

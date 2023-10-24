@@ -24,7 +24,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 @RestController
-@RequestMapping("${base.url}")
+@RequestMapping("${base.url}" + "/statuses")
 @Validated
 @AllArgsConstructor
 public class TaskStatusController {
@@ -37,7 +37,7 @@ public class TaskStatusController {
         @ApiResponse(responseCode = "200", description = "List of task statuses")
     })
     @GetMapping(
-        path = "/statuses",
+        path = "",
         produces = "application/json"
     )
     public List<TaskStatus> getStatuses() {
@@ -49,7 +49,7 @@ public class TaskStatusController {
         @ApiResponse(responseCode = "200", description = "Get specific task status by id")
     })
     @GetMapping(
-        path = "/statuses/{id}",
+        path = "/{id}",
         produces = "application/json"
     )
     public TaskStatus getTaskStatus(@Valid @PathVariable Long id) {
@@ -63,7 +63,7 @@ public class TaskStatusController {
     })
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping(
-        path = "/statuses",
+        path = "",
         produces = "application/json"
     )
     public TaskStatus createStatus(@Valid @RequestBody TaskStatusDto dto) {
@@ -76,7 +76,7 @@ public class TaskStatusController {
         @ApiResponse(responseCode = "422", description = "Data is not valid")
     })
     @PutMapping(
-        path = "/statuses/{id}",
+        path = "/{id}",
         produces = "application/json"
     )
     public TaskStatus updateStatus(@PathVariable Long id, @Valid @RequestBody TaskStatusDto dto) {
@@ -88,7 +88,7 @@ public class TaskStatusController {
         @ApiResponse(responseCode = "200", description = "Delete task status by id")
     })
     @DeleteMapping(
-        path = "/statuses/{id}"
+        path = "/{id}"
     )
     public void deleteStatus(@PathVariable Long id) {
         taskStatusRepository.deleteById(id);
