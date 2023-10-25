@@ -1,0 +1,26 @@
+spring:
+  logging:
+    level:
+      web: DEBUG
+      root: INFO
+  datasource:
+    username: user
+    url: jdbc:h2:mem:project5DB;DB_CLOSE_ON_EXIT=FALSE
+    password: password
+  h2:
+    console:
+      enabled: 'true'
+      path:
+        settings:
+          web-allow-others: 'true'
+        nodeValue: /h2console/
+  jpa:
+    show-sql: 'true'
+rollbar:
+  token: ''
+jwt:
+  secret: YzNlNjVkZTQ3YjEyNWY5MWVmNWE2MjQyMzRiYmE4NTRmNGY0N2EzMDc3ZTIwYTUxNjM3ZGI0YTgyZWYyNjA0Mg==
+server:
+  error:
+    include-stacktrace: on_param
+

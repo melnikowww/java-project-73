@@ -1,0 +1,30 @@
+spring:
+  jpa:
+    generate-ddl: 'true'
+    show-sql: 'true'
+    hibernate:
+      ddl-auto: update
+  devtools:
+    restart:
+      enabled: 'false'
+    livereload:
+      enabled: 'false'
+  datasource:
+    password: ${JDBC_DATABASE_PASSWORD}
+    driver-class-name: org.postgresql.Driver
+    username: ${JDBC_DATABASE_USER}
+    url: ${JDBC_DATABASE_URL}
+hibernate:
+  jdbc:
+    lob:
+      non_contextual_creation: 'true'
+jwt:
+  secret: ${JWT_SECRET}
+logging:
+  level:
+    ROOT: INFO
+server:
+  error:
+    include-stacktrace: never
+rollbar:
+  token: ${ROLLBAR_TOKEN}
