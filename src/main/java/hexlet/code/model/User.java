@@ -14,8 +14,8 @@ import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
-import lombok.ToString;
 import org.hibernate.annotations.CreationTimestamp;
 
 import org.springframework.security.core.GrantedAuthority;
@@ -31,11 +31,12 @@ import java.util.Collection;
 @AllArgsConstructor
 @Entity
 @Table(name = "users")
-@ToString
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class User implements UserDetails {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @EqualsAndHashCode.Include
     private Long id;
 
     @NotBlank
@@ -45,6 +46,7 @@ public class User implements UserDetails {
     private String lastName;
 
     @Column(unique = true)
+    @EqualsAndHashCode.Include
     private String email;
 
     @JsonIgnore

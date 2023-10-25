@@ -7,14 +7,14 @@ import lombok.AllArgsConstructor;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import hexlet.code.repository.UserRepository;
 
 @Service
 @Transactional
 @AllArgsConstructor
 public class UserServiceImpl implements UserService {
     private final PasswordEncoder encoder;
-    private final hexlet.code.repository.UserRepository userRepository;
-
+    private final UserRepository userRepository;
     @Override
     public User createUser(UserDto userDto) {
         User user = new User();

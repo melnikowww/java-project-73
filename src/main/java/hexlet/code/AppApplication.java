@@ -26,9 +26,6 @@ public class AppApplication {
 
     public static void main(String[] args) {
         SpringApplication application = new SpringApplication(AppApplication.class);
-        String profile = System.getenv("SPRING_PROFILES_ACTIVE") == null ? "development"
-            : System.getenv("SPRING_PROFILES_ACTIVE");
-        application.setAdditionalProfiles(profile);
         application.run(args);
     }
 }

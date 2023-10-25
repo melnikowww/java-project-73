@@ -25,6 +25,7 @@ import java.util.List;
 
 import static net.javacrumbs.jsonunit.assertj.JsonAssertions.assertThatJson;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
@@ -74,10 +75,9 @@ public class UserControllerTest {
         assertThat(response.getContentAsString()).contains("Petr");
 
         final List<User> userList = objectMapper.readValue(response.getContentAsString(), new TypeReference<>() { });
-        assertThat(userRepository.findAll().size()).isEqualTo(userList.size());
-        for (User user: userList) {
-            assertThat(userRepository.findAll().toString()).contains(user.getEmail());
-        }
+        final List<User> expected = userRepository.findAll();
+        assertThat(expected.size()).isEqualTo(userList.size());
+        assertThat(userList).containsAll(expected);
     }
 
     @Test
@@ -142,7 +142,21 @@ public class UserControllerTest {
     }
 
     @Test
-    public void loginUser() throws Exception {
+    public void deleteUserTest() throws Exception {
+        User user = userRepository.findUserByEmail("senya@mail.ru").orElseThrow();
+
+        MockHttpServletResponse response = mockMvc
+            .perform(delete(baseUrl + prefix  + "/users/" + user.getId())
+                .header("Authorization", "Bearer " + token)
+                )
+            .andReturn().getResponse();
+
+        assertThat(response.getStatus()).isEqualTo(200);
+        assertThat(userRepository.findById(user.getId())).isEmpty();
+    }
+
+    @Test
+    public void loginUserTest() throws Exception {
         User user = userRepository.findUserByEmail("senya@mail.ru").orElseThrow();
         LogInDto logInDto = new LogInDto(user.getEmail(), "sem777");
 

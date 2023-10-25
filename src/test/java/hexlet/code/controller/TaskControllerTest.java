@@ -78,10 +78,10 @@ public class TaskControllerTest {
             .andReturn().getResponse();
 
         assertThat(response.getStatus()).isEqualTo(200);
+        final List<Task> tasks = objectMapper.readValue(response.getContentAsString(), new TypeReference<List<Task>>() {
+        });
         final List<Task> expected = taskRepository.findAll();
-        for (Task task: expected) {
-            assertThat(response.getContentAsString().contains(task.getName())).isTrue();
-        }
+        assertThat(tasks).containsAll(expected);
     }
 
     @Test
@@ -186,6 +186,6 @@ public class TaskControllerTest {
             .andReturn().getResponse();
 
         assertThat(response.getStatus()).isEqualTo(200);
-        assertThat(taskRepository.findByName("TEST_TASK").isEmpty()).isTrue();
+        assertThat(taskRepository.findById(task.getId()).isEmpty()).isTrue();
     }
 }

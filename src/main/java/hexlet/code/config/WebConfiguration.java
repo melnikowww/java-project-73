@@ -14,7 +14,6 @@ import org.springframework.web.servlet.resource.PathResourceResolver;
 public class WebConfiguration implements WebMvcConfigurer {
 
     private final String baseApiPath;
-
     public WebConfiguration(@Value("${base.url}") String baseApiPath) {
         this.baseApiPath = baseApiPath;
     }

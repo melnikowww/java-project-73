@@ -10,6 +10,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -27,10 +28,12 @@ import static jakarta.persistence.GenerationType.IDENTITY;
 @Getter
 @Setter
 @Builder
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class Task {
 
     @Id
     @GeneratedValue(strategy = IDENTITY)
+    @EqualsAndHashCode.Include
     private Long id;
 
     @NotNull
@@ -48,8 +51,10 @@ public class Task {
     private List<Label> labels;
 
     @NotBlank
+    @EqualsAndHashCode.Include
     private String name;
 
+    @EqualsAndHashCode.Include
     private String description;
 
     @CreationTimestamp

@@ -11,9 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 @AllArgsConstructor
 public class TaskStatusServiceImpl implements TaskStatusService {
-
     private final TaskStatusRepository taskStatusRepository;
-
     @Override
     public TaskStatus createStatus(TaskStatusDto dto) {
         TaskStatus taskStatus = new TaskStatus(
