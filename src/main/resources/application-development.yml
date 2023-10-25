@@ -18,8 +18,8 @@ spring:
     show-sql: 'true'
 rollbar:
   token: ''
-jwt:
-  secret: YzNlNjVkZTQ3YjEyNWY5MWVmNWE2MjQyMzRiYmE4NTRmNGY0N2EzMDc3ZTIwYTUxNjM3ZGI0YTgyZWYyNjA0Mg==
+#jwt:
+#  secret: YzNlNjVkZTQ3YjEyNWY5MWVmNWE2MjQyMzRiYmE4NTRmNGY0N2EzMDc3ZTIwYTUxNjM3ZGI0YTgyZWYyNjA0Mg==
 server:
   error:
     include-stacktrace: on_param
