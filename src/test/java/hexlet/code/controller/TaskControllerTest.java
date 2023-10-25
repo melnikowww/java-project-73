@@ -24,6 +24,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashSet;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -95,6 +96,13 @@ public class TaskControllerTest {
             )
             .andReturn().getResponse();
 
+        final List<Task> expected = taskRepository.findAll().stream()
+            .filter(task -> task.getAuthor().getId().equals(user.getId()))
+            .collect(Collectors.toList());
+        final List<Task> actual = objectMapper.readValue(response.getContentAsString(), new TypeReference<>() {
+        });
+
+        assertThat(actual).isEqualTo(expected);
         assertThat(response.getStatus()).isEqualTo(200);
         assertThat(response.getContentAsString()).contains("TEST_TASK");
     }

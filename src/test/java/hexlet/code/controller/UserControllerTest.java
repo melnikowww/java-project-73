@@ -137,8 +137,8 @@ public class UserControllerTest {
 
         assertThat(response.getStatus()).isEqualTo(200);
 
-        user = userRepository.findUserByEmail("senya@mail.ru").orElseThrow();
-        assertThat(user.getFirstName()).isEqualTo("Senya");
+        final User expected = userRepository.findById(user.getId()).orElseThrow();
+        assertThat(expected.getFirstName()).isEqualTo("Senya");
     }
 
     @Test

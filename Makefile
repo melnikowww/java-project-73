@@ -2,7 +2,7 @@ clean:
 	./gradlew clean
 
 build:
-	SPRING_PROFILES_ACTIVE=development ./gradlew clean build
+	./gradlew clean build
 
 install:
 	./gradlew clean install

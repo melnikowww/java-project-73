@@ -19,7 +19,6 @@ import org.springframework.test.web.servlet.MockMvc;
 
 
 import java.util.List;
-import java.util.Optional;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -128,8 +127,7 @@ public class TaskStatusControllerTest {
         assertThat(response.getStatus()).isEqualTo(200);
         assertThat(response.getContentAsString()).contains(dto.getName());
 
-        assertThat(taskStatusRepository.findByName(taskStatus.getName())).isEmpty();
-        assertThat(taskStatusRepository.findByName(dto.getName())).isPresent();
+        assertThat(taskStatusRepository.findById(taskStatus.getId()).orElseThrow().getName()).isEqualTo(dto.getName());
     }
 
     @Test
@@ -147,9 +145,7 @@ public class TaskStatusControllerTest {
 
         assertThat(response.getStatus()).isEqualTo(200);
 
-        Optional<TaskStatus> deletedTaskStatus = taskStatusRepository.findByName("NEW_STAT1");
-
-        assertThat(deletedTaskStatus.isEmpty()).isTrue();
+        assertThat(taskStatusRepository.findById(taskStatus.getId())).isEmpty();
     }
 
 }

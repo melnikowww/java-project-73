@@ -128,10 +128,11 @@ public class LabelControllerTest {
             )
             .andReturn().getResponse();
 
+        final Label expected = labelRepository.findById(idToUpd).orElseThrow();
+
         assertThat(response.getStatus()).isEqualTo(200);
         assertThat(response.getContentAsString()).contains("NEW_LABEL");
-        assertThat(labelRepository.findByName("TEST_LABEL")).isEmpty();
-        assertThat(labelRepository.findByName(dto.getName())).isPresent();
+        assertThat(expected.getName()).isEqualTo(dto.getName());
     }
 
     @Test
@@ -146,7 +147,7 @@ public class LabelControllerTest {
             .andReturn().getResponse();
 
         assertThat(response.getStatus()).isEqualTo(200);
-        assertThat(labelRepository.findByName("TEST_LABEL").isEmpty()).isTrue();
+        assertThat(labelRepository.findById(id).isEmpty()).isTrue();
     }
 
     @Test
@@ -163,7 +164,7 @@ public class LabelControllerTest {
             .andReturn().getResponse();
 
         assertThat(response.getStatus()).isEqualTo(422);
-        assertThat(labelRepository.findByName("TEST_LABEL").isEmpty()).isFalse();
+        assertThat(labelRepository.findById(id).isEmpty()).isFalse();
     }
 
 }
