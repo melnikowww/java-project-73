@@ -105,9 +105,12 @@ public class TaskStatusControllerTest {
             .andReturn().getResponse();
 
         assertThat(response.getStatus()).isEqualTo(201);
-        assertThat(response.getContentAsString()).contains(dto.getName());
 
-        assertThat(taskStatusRepository.findByName(dto.getName()).orElseThrow()).isNotNull();
+        final TaskStatus created = objectMapper.readValue(response.getContentAsString(), new TypeReference<>() {
+        });
+
+        assertThat(taskStatusRepository.findById(created.getId())).isPresent();
+        assertThat(taskStatusRepository.findById(created.getId()).orElseThrow().getName()).isEqualTo(dto.getName());
     }
 
     @Test

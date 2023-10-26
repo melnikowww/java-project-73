@@ -146,10 +146,11 @@ public class TaskControllerTest {
                     .content(objectMapper.writeValueAsString(taskDto))
             )
             .andReturn().getResponse();
-
+        final Task created = objectMapper.readValue(response.getContentAsString(), new TypeReference<>() {
+        });
         assertThat(response.getStatus()).isEqualTo(201);
-        assertThat(response.getContentAsString()).contains("NEW_TASK");
-        assertThat(taskRepository.findByName(taskDto.getName())).isNotNull();
+        assertThat(taskRepository.findById(created.getId())).isNotNull();
+        assertThat(taskRepository.findById(created.getId()).orElseThrow().getName()).isEqualTo(taskDto.getName());
     }
 
     @Test

@@ -110,8 +110,12 @@ public class LabelControllerTest {
             .andReturn().getResponse();
 
         assertThat(response.getStatus()).isEqualTo(201);
-        assertThat(response.getContentAsString()).contains("NEW_LABEL");
-        assertThat(labelRepository.findByName("NEW_LABEL").isPresent()).isTrue();
+
+        final Label created = objectMapper.readValue(response.getContentAsString(), new TypeReference<>() {
+        });
+
+        assertThat(labelRepository.findById(created.getId()).isPresent()).isTrue();
+        assertThat(labelRepository.findById(created.getId()).orElseThrow().getName()).isEqualTo(dto.getName());
     }
 
     @Test

@@ -23,7 +23,7 @@ public class UserDto {
     @NotBlank
     private String password;
 
-    private UserRole role;
+    private UserRole role = UserRole.USER;
 
     public UserDto(String email, String firstName, String lastName, String password) {
         this.email = email;

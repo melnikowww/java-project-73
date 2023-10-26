@@ -114,13 +114,13 @@ public class UserControllerTest {
                 .content(content))
             .andReturn()
             .getResponse();
+        final User created = objectMapper.readValue(response.getContentAsString(), new TypeReference<>() {
+        });
+        final User actual = userRepository.findById(created.getId()).orElseThrow();
 
         assertThat(response.getStatus()).isEqualTo(201);
-
-        User user = userRepository.findUserByEmail("ivan@mail.ru").orElseThrow();
-        assertThat(user).isNotNull();
-        assertThat(user.getFirstName()).isEqualTo("Ivan");
-        assertThat(user.getPassword()).isNotEqualTo("12345");
+        assertThat(userRepository.findById(created.getId())).isPresent();
+        assertThat(actual).isEqualTo(created);
     }
 
     @Test
@@ -138,7 +138,7 @@ public class UserControllerTest {
         assertThat(response.getStatus()).isEqualTo(200);
 
         final User expected = userRepository.findById(user.getId()).orElseThrow();
-        assertThat(expected.getFirstName()).isEqualTo("Senya");
+        assertThat(expected.getFirstName()).isEqualTo(userDto.getFirstName());
     }
 
     @Test

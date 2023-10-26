@@ -1,6 +1,5 @@
 package hexlet.code.controllers;
 
-import hexlet.code.config.security.UserRole;
 import hexlet.code.dto.UserDto;
 import hexlet.code.model.User;
 import hexlet.code.repository.UserRepository;
@@ -70,9 +69,6 @@ public class UserController {
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping(path = "")
     public User createUser(@Valid @RequestBody UserDto userDto) {
-        if (userDto.getRole() == null) {
-            userDto.setRole(UserRole.USER);
-        }
         return userService.createUser(userDto);
     }
 
