@@ -22,7 +22,6 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @EnableWebSecurity
 @RequiredArgsConstructor
 public class WebSecurityConfig {
-
     private final JwtAuthFilter jwtAuthFilter;
     private final UserDetailsService userDetailsService;
     @Value(value = "${base.url}")

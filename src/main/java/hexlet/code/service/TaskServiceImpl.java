@@ -14,7 +14,6 @@ import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -51,12 +50,7 @@ public class TaskServiceImpl implements TaskService {
         final User author = userService.getCurrentUser();
         final User executor = userRepository.findById(dto.getExecutorId()).orElseThrow();
         final TaskStatus taskStatus = taskStatusRepository.findById(dto.getTaskStatusId()).orElseThrow();
-        final List<Label> labels = new ArrayList<>();
-        for (Long id: dto.getLabelIds()) {
-            if (id != null) {
-                labels.add(labelRepository.findById(id).orElseThrow());
-            }
-        }
+        final List<Label> labels = labelRepository.findByIdIn(dto.getLabelIds());
         return Task.builder()
             .name(name)
             .description(desc)
