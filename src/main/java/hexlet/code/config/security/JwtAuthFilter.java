@@ -19,10 +19,8 @@ import java.io.IOException;
 @Component
 @AllArgsConstructor
 public class JwtAuthFilter extends OncePerRequestFilter {
-
     private final JwtUtils jwtUtils;
     private final UserRepository userRepository;
-
     @Override
     protected void doFilterInternal(
         @NonNull HttpServletRequest request,
@@ -37,7 +35,6 @@ public class JwtAuthFilter extends OncePerRequestFilter {
             return;
         }
         jwt = authHeader.substring(7);
-
         UserDetails userDetails = userRepository
             .findUserByEmail(jwtUtils.extractUsername(jwt))
             .orElseThrow();
